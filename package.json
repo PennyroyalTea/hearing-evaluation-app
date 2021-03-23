@@ -2,7 +2,7 @@
   "name": "hearing-evaluation-app",
   "version": "0.0.1-beta",
   "description": "App for hearing impaired people to take hearing tests & more",
-  "main": "main.js",
+  "main": "src/backend/main.js",
   "scripts": {
     "start": "electron .",
     "test": "echo \"Error: no test specified\" && exit 1"
