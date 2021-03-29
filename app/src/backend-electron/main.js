@@ -5,6 +5,9 @@ const {
     dialog,
 } = require('electron')
 
+const isDev = require('electron-is-dev');
+
+const fs = require('fs')
 const path = require('path')
 
 const {Storage} = require('./Storage')
@@ -21,8 +24,13 @@ async function createWindow() {
             enableRemoteModule: false // for security reasons
         }
     })
-    await mainWindow.loadFile('src/index.html')
+
     mainWindow.webContents.openDevTools()
+    if (isDev) {
+        await mainWindow.loadURL('http://localhost:3000')
+    } else {
+        await mainWindow.loadFile(path.join(__dirname, '../../build/index.html'))
+    }
 }
 
 
@@ -46,7 +54,7 @@ app.on('activate', function () {
     }
 })
 
-ipcMain.handle('select-folder', async (_, _) => {
+ipcMain.handle('select-folder', async () => {
     const filename = dialog.showOpenDialog({
         title: 'Выберите папку',
         properties: ['openDirectory']
@@ -65,5 +73,27 @@ ipcMain.handle('write-local', async (event, name, val) => {
 
 ipcMain.handle('read-local', async (event, name) => {
     return storage.getProp(name)
+})
+
+ipcMain.handle('get-dir-structure', async (event, rootPath) => {
+    function generateTree(currentPath) {
+        let res = {}
+        let content = fs.readdirSync(currentPath, {withFileTypes: true})
+        for (let dirent of content) {
+            if (dirent.isFile()) {
+                res[dirent.name] = {
+                    'type': 'file'
+                }
+            }
+            if (dirent.isDirectory()) {
+                res[dirent.name] = {
+                    'type': 'dir',
+                    'content': generateTree(path.join(currentPath, dirent.name))
+                }
+            }
+        }
+        return res
+    }
+    return generateTree(rootPath)
 })
 

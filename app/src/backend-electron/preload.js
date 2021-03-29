@@ -12,5 +12,8 @@ contextBridge.exposeInMainWorld('backend', {
     },
     readLocal: (name) => {
         return ipcRenderer.invoke('read-local', name)
+    },
+    getDirStructure: (path) => {
+        return ipcRenderer.invoke('get-dir-structure', path)
     }
 })
