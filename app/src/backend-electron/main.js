@@ -50,32 +50,30 @@ app.on('activate', function () {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) {
-        createWindow().then(r => {})
+        createWindow()
     }
 })
 
-ipcMain.handle('select-folder', async () => {
-    const filename = dialog.showOpenDialog({
+ipcMain.handle('select-folder', () => {
+    return dialog.showOpenDialog({
         title: 'Выберите папку',
         properties: ['openDirectory']
     })
-    return filename
 })
 
-ipcMain.handle('get-app-path', async (event, args) => {
-    const filename = app.getPath('userData')
-    return filename
+ipcMain.handle('get-app-path', () => {
+    return app.getPath('userData')
 })
 
-ipcMain.handle('write-local', async (event, name, val) => {
+ipcMain.handle('write-local', (event, name, val) => {
     storage.setProp(name, val)
 })
 
-ipcMain.handle('read-local', async (event, name) => {
+ipcMain.handle('read-local', (event, name) => {
     return storage.getProp(name)
 })
 
-ipcMain.handle('get-dir-structure', async (event, rootPath) => {
+ipcMain.handle('get-dir-structure', (event, rootPath) => {
     function generateTree(currentPath) {
         let res = {}
         let content = fs.readdirSync(currentPath, {withFileTypes: true})
