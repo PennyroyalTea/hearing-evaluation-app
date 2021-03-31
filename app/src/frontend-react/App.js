@@ -1,65 +1,62 @@
 import 'antd/dist/antd.css';
 
 import React from 'react';
+import {
+    BrowserRouter as Router,
+    Switch,
+    Route,
+    Link
+} from 'react-router-dom';
 
-import {Layout, Menu} from 'antd'
+import {Layout,
+    Space,
+    Menu
+} from 'antd'
 
 
 import MainPage from "./MainPage";
 import StatisticsPage from "./StatisticsPage";
 
-
 const {Header, Content} = Layout;
 
-
-
-
 class App extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            current: 'main'
-        }
-    }
-
-
-    handleClick = (e) => {
-        console.log('click', e)
-        this.setState({
-            current: e.key
-        })
-    }
 
     render() {
-        let content;
-
-        if (this.state.current === 'main') {
-            content = <MainPage />
-        } else {
-            content = <StatisticsPage />
-        }
-
         return (
-            <Layout>
-                <Header style={{background: '#FFF'}}>
-                    <Menu
-                        onClick={this.handleClick}
-                        defaultSelectedKeys={['main']}
-                        selectedKeys={this.state.current}
-                        mode='horizontal'
-                        theme='light'>
-                            <Menu.Item key='main' style={{fontSize: '20px', fontWeight: 'bold'}}>
-                                Главная
-                            </Menu.Item>
-                            <Menu.Item key='stats' style={{fontSize: '20px', fontWeight: 'bold'}}>
-                                Пациенты
-                            </Menu.Item>
-                    </Menu>
-                </Header>
-                <Content>
-                    {content}
-                </Content>
-            </Layout>
+            <Router>
+                <Layout style={{background: '#fff'}} size='large'>
+                    <Space direction='vertical'>
+                        <Header>
+                            <Menu
+                                defaultSelectedKeys={['main']}
+                                mode='horizontal'
+                                theme='dark'>
+                                    <Menu.Item key='main' style={{fontSize: '20px', fontWeight: 'bold'}}>
+                                        <Link to='/'>
+                                            Главная
+                                        </Link>
+                                    </Menu.Item>
+                                    <Menu.Item key='stats' style={{fontSize: '20px', fontWeight: 'bold'}}>
+                                        <Link to='/stats'>
+                                            Пациенты
+                                        </Link>
+                                    </Menu.Item>
+                            </Menu>
+                        </Header>
+
+                        <Content style={{background: '#fff'}}>
+                            <Switch>
+                                <Route path='/stats'>
+                                    <StatisticsPage/>
+                                </Route>
+                                <Route path='/'>
+                                    <MainPage/>
+                                </Route>
+                            </Switch>
+                        </Content>
+                    </Space>
+                </Layout>
+            </Router>
         )
     }
 }
