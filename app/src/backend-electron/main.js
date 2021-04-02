@@ -1,5 +1,6 @@
 const {
     app,
+    protocol,
     BrowserWindow,
     ipcMain,
     dialog,
@@ -21,7 +22,8 @@ async function createWindow() {
             preload: path.join(__dirname, 'preload.js'),
             nodeIntegration: false, // for security reasons
             contextIsolation: true, // for security reasons
-            enableRemoteModule: false // for security reasons
+            enableRemoteModule: false, // for security reasons
+            webSecurity: false
         }
     })
 
@@ -36,7 +38,19 @@ async function createWindow() {
 
 
 // runs createWindow when initialisation is done
-app.whenReady().then(createWindow)
+app.whenReady().then(async ()=>{
+    // TODO: fix this protocol register bug
+    await protocol.registerFileProtocol('file', (request, cb) => {
+        const url = request.url.replace('file:///', '')
+        const decodedUrl = decodeURI(url)
+        try {
+            return cb(decodedUrl)
+        } catch (error) {
+            console.error('ERROR: registerLocalResourceProtocol: Could not get file path:', error)
+        }
+    })
+    await createWindow
+})
 
 
 app.on('window-all-closed', function () {

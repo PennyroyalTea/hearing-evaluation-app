@@ -1,86 +1,56 @@
-import React from "react";
+import React from 'react';
 
-import {Row, Col, Spin, Button, List, Typography} from 'antd'
+import {Empty} from 'antd'
 
-import {mockFolderStructure} from "./Mock";
 
-const {Title} = Typography;
+import {FolderMenu} from './FolderMenu'
+import {TestPage} from './TestPage'
+
 
 class MainPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            loaded: false,
-            tree: undefined,
-            curPath: []
+            mode: 'menu', // menu | test
+            savedPath: undefined,
+            testMode: undefined, // practice | exam
+            testFile: undefined
         }
     }
 
-    async componentDidMount() {
-        await this.loadFolderStructure()
-    }
-
-    async loadFolderStructure() {
-    //    TODO: attach actual backend
-        const res = await mockFolderStructure()
+    runTest(testConfig) {
+        let {testMode, testFile} = testConfig
         this.setState({
-            loaded: true,
-            tree: res
+            mode: 'test',
+            testMode: testMode,
+            testFile: testFile
         })
     }
 
-    getEntryByPath(tree, path) {
-        let cur = tree
-        for (let go of path) {
-            const nextEntry = cur.content.find(elem => elem.name === go)
-            if (nextEntry) {
-                cur = nextEntry
-            } else {
-                return null
-            }
-        }
-        return cur
-    }
-
-    renderEntry(entry) {
-        return (<List.Item>
-            <Button
-                type={(entry.type === 'test' ? 'primary' : '')}
-                onClick={() => console.log(`go to ${entry.name}`)}
-            >
-                {entry.name}
-            </Button>
-        </List.Item>)
+    finishTest(result) {
+        console.log(`test finished ${result}`)
+        this.setState({
+            mode: 'menu'
+        })
     }
 
     render() {
-        let content;
-
-        if (!this.state.loaded) {
-            content = <Spin delay={100} size="large"/>
-        } else {
-            // TODO: some logic to show tree
-            // content = JSON.stringify(this.state.tree)
-            content = (<List
-                header = {<Title>{this.getEntryByPath(this.state.tree, this.state.curPath).name}</Title>}
-                dataSource={this.getEntryByPath(this.state.tree, this.state.curPath).content}
-                renderItem={(item) => this.renderEntry(item)}
-            />)
+        switch (this.state.mode) {
+            case 'menu':
+                return (<FolderMenu
+                    path={this.state.savedPath}
+                    testRunner={testConfig=>this.runTest(testConfig)}
+                    pathUpdater={path=>this.setState({savedPath: path})}
+                />)
+            case 'test':
+                return (<TestPage
+                    testMode={this.state.testMode}
+                    testFile={this.state.testFile}
+                    testEnder={result=>this.finishTest(result)}
+                />)
+            default:
+                return <Empty description='Exception: Wrong mode in MainPage'/>
         }
-
-        return (
-            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col span={8} style={{backgroundColor: '#fee'}}>
-                    COL1
-                </Col>
-                <Col span={8}>
-                    {content}
-                </Col>
-                <Col span={8} style={{backgroundColor: '#fee'}}>
-                    COL3
-                </Col>
-            </Row>
-        )
     }
 }
 
