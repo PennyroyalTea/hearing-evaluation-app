@@ -31,15 +31,12 @@ async function createWindow() {
     if (isDev) {
         await mainWindow.loadURL('http://localhost:3000')
     } else {
-        await mainWindow.loadFile(path.join(__dirname, '../../build/index.html'))
+        await mainWindow.loadFile(path.join(__dirname, '..', '..', 'build', 'index.html'))
     }
 }
 
-
-
 // runs createWindow when initialisation is done
-app.whenReady().then(async ()=>{
-    // TODO: fix this protocol register bug
+app.whenReady().then(async () => {// TODO: fix this protocol register bug
     await protocol.registerFileProtocol('file', (request, cb) => {
         const url = request.url.replace('file:///', '')
         const decodedUrl = decodeURI(url)
@@ -49,8 +46,9 @@ app.whenReady().then(async ()=>{
             console.error('ERROR: registerLocalResourceProtocol: Could not get file path:', error)
         }
     })
-    await createWindow
+    await createWindow()
 })
+
 
 
 app.on('window-all-closed', function () {

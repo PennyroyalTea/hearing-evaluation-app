@@ -15,9 +15,7 @@
   "main": "src/backend-electron/main.js",
   "homepage": "./",
   "dependencies": {
-    "@ant-design/charts": "^1.1.1",
     "@ant-design/icons": "^4.6.2",
-    "@antv/g2plot": "^2.3.17",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
@@ -46,9 +44,11 @@
     "react-eject": "react-scripts eject",
     "electron-build": "electron-builder",
     "electron-build-all": "electron-builder -mwl",
+    "electron-build-windows": "electron-builder -w",
     "release": "yarn react-build && electron-builder --publish=always",
     "build": "yarn react-build && yarn electron-build",
     "build-all": "yarn react-build && yarn electron-build-all",
+    "build-windows": "yarn react-build && yarn electron-build-windows",
     "start": "concurrently \"cross-env BROWSER=none yarn react-start\" \"wait-on http://localhost:3000 && electron .\""
   },
   "eslintConfig": {

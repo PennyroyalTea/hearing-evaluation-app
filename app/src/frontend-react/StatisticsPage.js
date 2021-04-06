@@ -1,12 +1,8 @@
 import React from "react";
 
-import {List, Card, Typography, Spin, Table} from 'antd'
-
-import { Line } from '@ant-design/charts';
+import {List, Card, Spin, Table} from 'antd'
 
 import {mockUserList, mockDetailedStats} from "./Mock";
-
-const {Title} = Typography;
 
 class StatisticsPage extends React.Component {
     constructor(props) {
@@ -67,24 +63,7 @@ class UserStatistics extends React.Component {
         super(props);
         this.state = {
             userId: props.userId,
-            stats: undefined,
-            columns: [
-                {
-                    title: 'Время',
-                    dataIndex: 'time',
-                    key: 'time',
-                },
-                {
-                    title: 'Правильных',
-                    dataIndex: 'correct',
-                    key: 'correct',
-                },
-                {
-                    title: 'Всего',
-                    dataIndex: 'total',
-                    key: 'total',
-                },
-            ]
+            stats: undefined
         }
     }
 
@@ -105,15 +84,7 @@ class UserStatistics extends React.Component {
             return <Spin delay={150}/>
         }
 
-        const config = {
-            data: this.state.stats,
-            xField: 'ts',
-            yField: 'correct',
-        };
-
         return (<div>
-            <Title>Статистика пользователя #{this.state.userId}</Title>
-            <Line {...config}/>
             <Table dataSource={this.state.stats} columns={this.state.columns}/>
         </div>)
     }
