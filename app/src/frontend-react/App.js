@@ -4,7 +4,8 @@ import React from 'react';
 
 import {Layout,
     Space,
-    Menu
+    Menu,
+    Empty
 } from 'antd'
 
 
@@ -19,9 +20,10 @@ class App extends React.Component {
         super(props);
         this.state = {
             page: 'main', // main | stats | settings
-            tfolderLoading: true,
-            tfolderSucc: undefined,
-            tfolder: undefined
+            tfolder: {
+                status: 'loading', // loading | error | ok
+                path: undefined
+            }
         }
     }
 
@@ -30,13 +32,14 @@ class App extends React.Component {
     }
 
     async selectFolder() {
-
         const {canceled, filePaths} = await window.backend.selectFolder()
         if (canceled) {
-            if (!this.state.tfolderSucc) {
+            if (this.state.tfolder.status !== 'ok') {
                 this.setState({
-                    tfolderLoading: false,
-                    tfolderSucc: false
+                    tfolder: {
+                        status: 'error',
+                        path: undefined
+                    }
                 })
             }
             return
@@ -44,9 +47,10 @@ class App extends React.Component {
         const path = filePaths[0]
         await window.backend.writeLocal('tfolder', path)
         this.setState({
-            tfolderLoading: false,
-            tfolderSucc: true,
-            tfolder: path
+            tfolder: {
+                status: 'ok',
+                path: path
+            }
         })
     }
 
@@ -54,9 +58,10 @@ class App extends React.Component {
         let path = await window.backend.readLocal('tfolder')
         if (path) {
             this.setState({
-                tfolderLoading: false,
-                tfolderSucc: true,
-                tfolder: path
+                tfolder: {
+                    status: 'ok',
+                    path: path
+                }
             })
         } else {
             await this.selectFolder()
@@ -73,19 +78,19 @@ class App extends React.Component {
         let content;
         switch (this.state.page) {
             case 'main':
-                content = <MainPage/>
+                content = <MainPage tfolder={this.state.tfolder}/>
                 break;
             case 'stats':
                 content = <StatisticsPage/>
                 break;
             case 'settings':
                 content = (<SettingsPage
-                    tfolderLoading={this.state.tfolderLoading}
-                    tfolderSucc={this.state.tfolderSucc}
                     tfolder={this.state.tfolder}
                     tfolderReloader={() => this.selectFolder()}
                 />);
                 break;
+            default:
+                content = <Empty/>
         }
 
 
@@ -103,7 +108,7 @@ class App extends React.Component {
                                 <Menu.Item key='main' style={{fontSize: '20px', fontWeight: 'bold'}}>
                                         Главная
                                 </Menu.Item>
-                                <Menu.Item key='stats' style={{fontSize: '20px', fontWeight: 'bold'}}>
+                                <Menu.Item key='stats' style={{fontSize: '20px', fontWeight: 'bold'}} disabled>
                                     Пациенты
                                 </Menu.Item>
                                 <Menu.Item key='settings' style={{fontSize: '20px', fontWeight: 'bold'}}>

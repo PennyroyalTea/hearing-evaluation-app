@@ -2,24 +2,22 @@ import React from "react";
 
 import {List as ImmutableList} from "immutable";
 
-import {mockFolderStructure, mockTestDescription} from "./Mock";
-
 import {Button, Card, Col, List, Row, Spin, Typography} from "antd";
+
+const path = require('path');
 
 const {Title} = Typography;
 
 export class FolderMenu extends React.Component {
     constructor(props) {
-        const path = props.path || ImmutableList()
+        const pathList = props.pathList || ImmutableList()
 
         super(props);
         this.state = {
             loaded: false,
             tree: undefined,
-            curPath: path,
+            curPathList: pathList,
             testCard: undefined,
-            testRunner: props.testRunner,
-            pathUpdater: props.pathUpdater
         }
     }
 
@@ -28,18 +26,15 @@ export class FolderMenu extends React.Component {
     }
 
     async loadFolderStructure() {
-        //    TODO: attach actual backend
-        const res = await mockFolderStructure()
+        const res = await window.backend.loadDirStructure(this.props.tfolder.path)
         this.setState({
             loaded: true,
             tree: res
         })
     }
 
-    async loadTestFile(filename) {
-        // TODO: attach actual backend
-        const res = await mockTestDescription()
-        return res
+    async loadTestFile(testFilePath) {
+        return await window.backend.loadJson(path.join(testFilePath, 'config.json'));
     }
 
     getEntryByPath(tree, path) {
@@ -62,17 +57,18 @@ export class FolderMenu extends React.Component {
             onClick = () => this.setState({testCard: entry});
         } else {
             onClick = () => {
-                const nextPath =  this.state.curPath.push(entry.name);
-                this.state.pathUpdater(nextPath)
-                this.setState({testCard: null, curPath: nextPath})
+                const nextPath =  this.state.curPathList.push(entry.name);
+                this.props.pathUpdater(nextPath)
+                this.setState({testCard: null, curPathList: nextPath})
 
             }
         }
 
-        return (<List.Item>
+        return (<List.Item style={{justifyContent:'center'}}>
             <Button
                 type={btnType}
                 onClick={onClick}
+                size='large'
             >
                 {entry.name}
             </Button>
@@ -85,7 +81,7 @@ export class FolderMenu extends React.Component {
         if (!this.state.loaded) {
             content = <Spin delay={100} size="large"/>
         } else {
-            const entry = this.getEntryByPath(this.state.tree, this.state.curPath)
+            const entry = this.getEntryByPath(this.state.tree, this.state.curPathList)
             content = (<List
                 header = {<Title>{entry.name}</Title>}
                 dataSource={entry.content}
@@ -95,22 +91,28 @@ export class FolderMenu extends React.Component {
 
         let rightCol;
         if (this.state.testCard) {
+            let testPath = path.join.apply(
+                null,
+                [this.props.tfolder.path].concat(this.state.curPathList.toJS()).concat(['~'.concat(this.state.testCard.name)])
+            );
+
             rightCol = ( <Card
                 title={this.state.testCard.name}
                 actions={[
                     <Button
-                        onClick={async ()=>this.state.testRunner({
+                        onClick={async ()=>this.props.testRunner({
                             testMode: 'practice',
-                            testFile: await this.loadTestFile(this.state.testCard.name)
+                            testPath: testPath,
+                            config: await this.loadTestFile(testPath)
                         })}
                     >Тренировка</Button>,
                     <Button
-                        onClick={async ()=>this.state.testRunner({
+                        onClick={async ()=>this.props.testRunner({
                             testMode: 'exam',
-                            testFile: await this.loadTestFile(this.state.testCard.name)
+                            testPath: testPath,
+                            config: await this.loadTestFile(testPath)
                         })}
-                    >Тест</Button>,
-                    <Button>Статистика</Button>
+                    >Тест</Button>
                 ]}
             >
 
@@ -119,9 +121,9 @@ export class FolderMenu extends React.Component {
         }
 
         let leftCol = undefined;
-        if (this.state.curPath.size > 0) {
+        if (this.state.curPathList.size > 0) {
             leftCol = ( <Button
-                onClick={()=>(this.setState({curPath: this.state.curPath.pop()}))}
+                onClick={()=>(this.setState({curPathList: this.state.curPathList.pop()}))}
             >Назад</Button>)
         }
 

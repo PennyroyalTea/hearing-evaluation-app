@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Empty} from 'antd'
+import {Empty, Spin} from 'antd'
 
 
 import {FolderMenu} from './FolderMenu'
@@ -12,18 +12,21 @@ class MainPage extends React.Component {
         super(props);
         this.state = {
             mode: 'menu', // menu | test
-            savedPath: undefined,
+            savedPathList: undefined,
             testMode: undefined, // practice | exam
-            testFile: undefined
+            testFile: undefined,
+            testConfig: undefined
         }
     }
 
-    runTest(testConfig) {
-        let {testMode, testFile} = testConfig
+    runTest(params) {
+        let {testMode, testPath, config} = params
+        console.log(`run test params: ${JSON.stringify(params)}`)
         this.setState({
             mode: 'test',
             testMode: testMode,
-            testFile: testFile
+            testPath: testPath,
+            testConfig: config
         })
     }
 
@@ -37,15 +40,20 @@ class MainPage extends React.Component {
     render() {
         switch (this.state.mode) {
             case 'menu':
-                return (<FolderMenu
-                    path={this.state.savedPath}
-                    testRunner={testConfig=>this.runTest(testConfig)}
-                    pathUpdater={path=>this.setState({savedPath: path})}
-                />)
+                return this.props.tfolder.status === 'ok' ? (
+                    <FolderMenu
+                    tfolder={this.props.tfolder}
+                    pathList={this.state.savedPathList}
+                    testRunner={p=>this.runTest(p)}
+                    pathUpdater={path=>this.setState({savedPathList: path})}
+                />) : (
+                    <Spin delay={200}/>
+                )
             case 'test':
                 return (<TestPage
                     testMode={this.state.testMode}
-                    testFile={this.state.testFile}
+                    testPath={this.state.testPath}
+                    config={this.state.testConfig}
                     testEnder={result=>this.finishTest(result)}
                 />)
             default:
