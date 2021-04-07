@@ -8,11 +8,13 @@ const {
 
 const isDev = require('electron-is-dev');
 
-const fs = require('fs')
 const path = require('path')
 
 const {Storage} = require('./Storage')
-storage = new Storage()
+const {Loader} = require('./Loader')
+
+let storage = new Storage()
+let loader = new Loader()
 
 async function createWindow() {
     const mainWindow = new BrowserWindow({
@@ -85,25 +87,11 @@ ipcMain.handle('read-local', (event, name) => {
     return storage.getProp(name)
 })
 
-ipcMain.handle('get-dir-structure', (event, rootPath) => {
-    function generateTree(currentPath) {
-        let res = {}
-        let content = fs.readdirSync(currentPath, {withFileTypes: true})
-        for (let dirent of content) {
-            if (dirent.isFile()) {
-                res[dirent.name] = {
-                    'type': 'file'
-                }
-            }
-            if (dirent.isDirectory()) {
-                res[dirent.name] = {
-                    'type': 'dir',
-                    'content': generateTree(path.join(currentPath, dirent.name))
-                }
-            }
-        }
-        return res
-    }
-    return generateTree(rootPath)
+ipcMain.handle('load-dir-structure', (event, rootPath) => {
+    return loader.loadFolderHierarchy(rootPath)
+})
+
+ipcMain.handle('load-json', (event, path) => {
+    return loader.loadJson(path)
 })
 

@@ -2,7 +2,7 @@ const {app} = require('electron')
 
 const path = require('path')
 
-const fs = require('fs');
+const fs = require('fs')
 
 const configFileName = 'config.json'
 

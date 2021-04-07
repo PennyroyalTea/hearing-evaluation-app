@@ -13,7 +13,10 @@ contextBridge.exposeInMainWorld('backend', {
     readLocal: (name) => {
         return ipcRenderer.invoke('read-local', name)
     },
-    getDirStructure: (path) => {
-        return ipcRenderer.invoke('get-dir-structure', path)
+    loadDirStructure: (path) => {
+        return ipcRenderer.invoke('load-dir-structure', path)
+    },
+    loadJson: (path) => {
+        return ipcRenderer.invoke('load-json', path)
     }
 })
