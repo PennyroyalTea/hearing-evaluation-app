@@ -69,6 +69,8 @@ export class TestPage extends React.Component {
             } else {
                 message.error('Неправильно :(', 2)
             }
+        } else {
+            message.warn('Ответ принят!', 2)
         }
 
         const questionsTotal = this.props.config.questions.length
