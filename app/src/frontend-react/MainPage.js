@@ -51,8 +51,8 @@ class MainPage extends React.Component {
                 )
             case 'test':
                 return (<TestPage
+                    tfolder={this.props.tfolder}
                     testMode={this.state.testMode}
-                    testPath={this.state.testPath}
                     config={this.state.testConfig}
                     testEnder={result=>this.finishTest(result)}
                 />)

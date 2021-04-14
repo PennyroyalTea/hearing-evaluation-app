@@ -101,7 +101,11 @@ export class TestPage extends React.Component {
         return (<List.Item>
             <Image
                 preview={false}
-                src={path.join('file://', this.props.testPath, 'images', answer.image)}
+                src={path.join(
+                    'file://',
+                    this.props.tfolder.path,
+                    this.props.config.settings.resourceDir,
+                    answer.image)}
                 onClick={()=>this.handleImageClick(answer.image)}
                 style={{border: isSelected ? 'solid' : ''}}
             />
@@ -153,7 +157,12 @@ export class TestPage extends React.Component {
                     <br/>
                     <audio
                         controls
-                        src={path.join('file://', this.props.testPath, 'sounds', this.props.config.questions[qId].sound)}
+                        src={path.join(
+                            'file://',
+                            this.props.tfolder.path,
+                            this.props.config.settings.resourceDir,
+                            this.props.config.questions[qId].sound
+                        )}
                     />
                     <List
                         grid={{gutter:16, column: 4}}

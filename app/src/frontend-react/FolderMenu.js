@@ -93,7 +93,7 @@ export class FolderMenu extends React.Component {
         if (this.state.testCard) {
             let testPath = path.join.apply(
                 null,
-                [this.props.tfolder.path].concat(this.state.curPathList.toJS()).concat(['~'.concat(this.state.testCard.name)])
+                [this.props.tfolder.path].concat(this.state.curPathList.toJS()).concat([this.state.testCard.name])
             );
 
             rightCol = ( <Card

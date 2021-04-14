@@ -10,12 +10,16 @@ class Loader {
     async loadFolderHierarchy(rootPath) {
         async function generateTree(curPath, name, loadJson) {
             let curName = name;
-            let curType = 'dir';
+            let curType;
             let curDescription = undefined;
-            if (name[0] === '~') {
-                curName = name.slice(1);
+
+            try {
+                await fs.access(path.join(curPath, 'config.json'));
+                // current folder contains config.json
                 curType = 'test';
                 curDescription = (await loadJson(path.join(curPath, 'config.json'))).description;
+            } catch (e) {
+                curType = 'dir';
             }
 
             let res = {
@@ -26,7 +30,7 @@ class Loader {
             }
             let content = await fs.readdir(curPath, {withFileTypes: true});
             for (let dirent of content) {
-                if (dirent.isDirectory()) {
+                if (dirent.isDirectory() && !['.', '~'].includes(dirent.name[0])) {
                     res.content.push(await generateTree(path.join(curPath, dirent.name), dirent.name, loadJson))
                 }
             }
