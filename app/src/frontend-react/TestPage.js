@@ -9,16 +9,39 @@ export class TestPage extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            file: props.testFile,
-            testEnder: props.testEnder,
+            loaded: false,
+            config: this.props.config,
             questionId: 0,
             correctAnswers: 0,
             ended: false
         }
     }
 
+    componentDidMount() {
+        if (this.state.config.settings.shareImages) {
+        //    generate this.state.config.questions from this.state.config.questionsShared
+            console.log(`questionsShared: \n\n ${JSON.stringify(this.state.config.questionsShared)}`)
+            let questions = this.state.config.questionsShared.sounds.map((sound, id) => {
+                return {
+                    sound: sound,
+                    answers: this.state.config.questionsShared.images.map(imagePath => {
+                        return {
+                            image: imagePath,
+                            correct: this.state.config.questionsShared.answers[id].includes(path.basename(imagePath))
+                        }
+                    })
+                }
+            })
+            this.setState({
+                config: {...this.state.config, ...{questions: questions}},
+                loaded: true
+            })
+            console.log(`config: \n\n ${this.state.config}`)
+        }
+    }
+
     handleImageClick(image) {
-        if (!this.props.config.settings.multipleAnswers) {
+        if (!this.state.config.settings.multipleAnswers) {
             this.setState({
                 [`img_${image}`]: true
             }, ()=>{
@@ -42,7 +65,7 @@ export class TestPage extends React.Component {
 
     handleNextClick() {
         let correct = true;
-        for (let answer of this.props.config.questions[this.state.questionId].answers) {
+        for (let answer of this.state.config.questions[this.state.questionId].answers) {
             let isSelected = this.state[`img_${answer.image}`] || false
             if (isSelected !== answer.correct) {
                 correct = false;
@@ -51,7 +74,7 @@ export class TestPage extends React.Component {
         }
 
         let erasedSelections = {}
-        for (let answer of this.props.config.questions[this.state.questionId].answers) {
+        for (let answer of this.state.config.questions[this.state.questionId].answers) {
             erasedSelections[`img_${answer.image}`] = undefined
         }
 
@@ -73,7 +96,7 @@ export class TestPage extends React.Component {
             message.warn('Ответ принят!', 2)
         }
 
-        const questionsTotal = this.props.config.questions.length
+        const questionsTotal = this.state.config.questions.length
         if (this.state.questionId + 1 === questionsTotal) {
             this.setState({
                 ended: true
@@ -86,11 +109,11 @@ export class TestPage extends React.Component {
     }
 
     handleReturnClick() {
-        this.state.testEnder({
+        this.props.testEnder({
             userId: 'admin',
             testId: 'THE-test',
             succ: this.state.correctAnswers,
-            all: this.props.config.questions.length,
+            all: this.state.config.questions.length,
             ts: Date.now()
         })
     }
@@ -104,7 +127,7 @@ export class TestPage extends React.Component {
                 src={path.join(
                     'file://',
                     this.props.tfolder.path,
-                    this.props.config.settings.resourceDir,
+                    this.state.config.settings.resourceDir,
                     answer.image)}
                 onClick={()=>this.handleImageClick(answer.image)}
                 style={{border: isSelected ? 'solid' : ''}}
@@ -115,16 +138,22 @@ export class TestPage extends React.Component {
     render() {
         const qId = this.state.questionId;
 
+        if (!this.state.loaded) {
+            return (
+                <div>Загрузка</div>
+            )
+        }
+
         if (this.state.ended) {
             return (
                 <div align='center'>
                     <Title>
-                        Конец теста! Правильных ответов: {this.state.correctAnswers} из {this.props.config.questions.length}
+                        Конец теста! Правильных ответов: {this.state.correctAnswers} из {this.state.config.questions.length}
                     </Title>
                     <Progress
                         type='circle'
                         strokeColor='green'
-                        percent={Math.round(100 * this.state.correctAnswers / this.props.config.questions.length)}
+                        percent={Math.round(100 * this.state.correctAnswers / this.state.config.questions.length)}
                     />
                     <Button
                         onClick={()=>this.handleReturnClick()}
@@ -142,11 +171,11 @@ export class TestPage extends React.Component {
                         Режим: {this.props.testMode === 'practice' ? 'тренировка' : 'тестирование'}
                     </p>
                     <p>
-                        Вопрос {qId + 1} / {this.props.config.questions.length}
+                        Вопрос {qId + 1} / {this.state.config.questions.length}
                     </p>
                     <br/>
                     {
-                        this.props.config.settings.multipleAnswers ? (
+                        this.state.config.settings.multipleAnswers ? (
                             <Button
                                 onClick={()=>this.handleNextClick()}
                             >
@@ -160,13 +189,13 @@ export class TestPage extends React.Component {
                         src={path.join(
                             'file://',
                             this.props.tfolder.path,
-                            this.props.config.settings.resourceDir,
-                            this.props.config.questions[qId].sound
+                            this.state.config.settings.resourceDir,
+                            this.state.config.questions[qId].sound
                         )}
                     />
                     <List
                         grid={{gutter:16, column: 4}}
-                        dataSource={this.props.config.questions[qId].answers}
+                        dataSource={this.state.config.questions[qId].answers}
                         renderItem={(answer)=>this.renderAnswer(answer)}
                     />
                 </Col>
