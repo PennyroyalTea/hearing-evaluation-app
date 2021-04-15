@@ -2,7 +2,7 @@ import React from "react";
 
 import {List as ImmutableList} from "immutable";
 
-import {Button, Card, Col, List, Row, Spin, Typography} from "antd";
+import {Button, Card, Col, List, Row, Spin, Typography, Breadcrumb} from "antd";
 
 const path = require('path');
 
@@ -128,17 +128,33 @@ export class FolderMenu extends React.Component {
         }
 
         return (
-            <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                <Col span={8} align={'right'}>
-                    {leftCol}
-                </Col>
-                <Col span={8}>
-                    {content}
-                </Col>
-                <Col span={8}>
-                    {rightCol}
-                </Col>
-            </Row>
+            <>
+                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col span={4}>
+                        {leftCol}
+                    </Col>
+                    <Col span={20}>
+                        <Breadcrumb style={{fontSize: 22}}>
+                            <Breadcrumb.Item>
+                                {this.loaded? this.getEntryByPath(this.state.tree, []).name : ''}
+                            </Breadcrumb.Item>
+                            {this.state.curPathList.map(entry=>{
+                                return (
+                                    <Breadcrumb.Item>{entry}</Breadcrumb.Item>
+                                )
+                            })}
+                        </Breadcrumb>
+                    </Col>
+                </Row>
+                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
+                    <Col span={12}>
+                        {content}
+                    </Col>
+                    <Col span={12}>
+                        {rightCol}
+                    </Col>
+                </Row>
+            </>
         )
     }
 }
