@@ -11,7 +11,7 @@ const isDev = require('electron-is-dev');
 const path = require('path')
 
 const {Storage} = require('./Storage')
-const {Loader} = require('./Loader')
+const {Loader, loadJson} = require('./Loader')
 
 let storage = new Storage()
 let loader = new Loader()
@@ -92,6 +92,6 @@ ipcMain.handle('load-dir-structure', (event, rootPath) => {
 })
 
 ipcMain.handle('load-json', (event, path) => {
-    return loader.loadJson(path)
+    return loadJson(path)
 })
 

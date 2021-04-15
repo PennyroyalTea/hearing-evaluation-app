@@ -1,24 +1,68 @@
 const fs = require('fs/promises');
 const path = require('path');
 
-class Loader {
-    async loadJson(filePath) {
-        const content = (await fs.readFile(filePath)).toString('utf-8');
-        return JSON.parse(content);
+async function fileExists(filePath) {
+    try {
+        await fs.access(filePath);
+        return true;
+    } catch (e) {
+        return false;
+    }
+}
+
+async function loadJson(filePath) {
+    const content = (await fs.readFile(filePath)).toString('utf-8');
+    return JSON.parse(content);
+}
+
+async function validateOrder(dirPath) {
+    if (!await fileExists(path.join(dirPath, 'order.json'))) {
+        await fs.writeFile(path.join(dirPath, 'order.json'), JSON.stringify({
+            order: []
+        }))
     }
 
+    let orderOld = (await loadJson(path.join(dirPath, 'order.json'))).order;
+
+    let actualFolders = [];
+    let allEntries = await fs.readdir(dirPath, {withFileTypes: true});
+    for (let dirent of allEntries) {
+        if (dirent.isDirectory() && !['.', '~'].includes(dirent.name[0])) {
+            actualFolders.push(dirent.name)
+        }
+    }
+
+    let orderNew = [];
+    for (const entry of orderOld) {
+        if (actualFolders.includes(entry)) {
+            orderNew.push(entry);
+        }
+    }
+    for (const entry of actualFolders) {
+        if (!orderOld.includes(entry)) {
+            orderNew.push(entry);
+        }
+    }
+
+    await fs.writeFile(path.join(dirPath, 'order.json'), JSON.stringify({
+        order: orderNew
+    }))
+}
+
+class Loader {
     async loadFolderHierarchy(rootPath) {
-        async function generateTree(curPath, name, loadJson) {
+        async function generateTree(curPath, name) {
+            await validateOrder(curPath);
+            const folders = (await loadJson(path.join(curPath, 'order.json'))).order;
+
             let curName = name;
             let curType;
             let curDescription = undefined;
 
-            try {
-                await fs.access(path.join(curPath, 'config.json'));
-                // current folder contains config.json
+            if (await fileExists(path.join(curPath, 'config.json'))) {
                 curType = 'test';
                 curDescription = (await loadJson(path.join(curPath, 'config.json'))).description;
-            } catch (e) {
+            } else {
                 curType = 'dir';
             }
 
@@ -28,16 +72,14 @@ class Loader {
                 description: curDescription,
                 content: [],
             }
-            let content = await fs.readdir(curPath, {withFileTypes: true});
-            for (let dirent of content) {
-                if (dirent.isDirectory() && !['.', '~'].includes(dirent.name[0])) {
-                    res.content.push(await generateTree(path.join(curPath, dirent.name), dirent.name, loadJson))
-                }
+            for (let folder of folders) {
+                res.content.push(await generateTree(path.join(curPath, folder), folder))
             }
             return res;
         }
-        return generateTree(rootPath, path.basename(rootPath), path => this.loadJson(path));
+        return generateTree(rootPath, path.basename(rootPath));
     }
 }
 
 module.exports.Loader = Loader
+module.exports.loadJson = loadJson
