@@ -1,6 +1,7 @@
 import React from "react";
 import {Progress, message, Image, Typography, List, Button, Col, Row} from "antd";
 
+const shuffle = require('shuffle-array');
 const path = require('path');
 
 const {Title} = Typography;
@@ -18,6 +19,10 @@ export class TestPage extends React.Component {
     }
 
     componentDidMount() {
+        let needShuffling =
+            (this.props.testMode === 'practice' && this.state.config.settings.shuffleTraining) ||
+            (this.props.testMode === 'exam' && this.state.config.settings.shuffleTesting);
+
         if (this.state.config.settings.shareImages) {
         //    generate this.state.config.questions from this.state.config.questionsShared
             console.log(`questionsShared: \n\n ${JSON.stringify(this.state.config.questionsShared)}`)
@@ -33,10 +38,17 @@ export class TestPage extends React.Component {
                 }
             })
             this.setState({
-                config: {...this.state.config, ...{questions: questions}}
+                config: {...this.state.config, ...{questions: needShuffling ? shuffle(questions) : questions}}
             })
-            console.log(`config: \n\n ${this.state.config}`)
+            console.log(`config: \n\n ${JSON.stringify(this.state.config)}`)
+        } else {
+            if (needShuffling) {
+                this.setState({
+                    config: {...this.state.config, ...{questions: shuffle(this.state.config.questions)}}
+                })
+            }
         }
+
         this.setState({
             loaded: true
         })
