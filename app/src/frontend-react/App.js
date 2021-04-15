@@ -106,7 +106,7 @@ class App extends React.Component {
                             mode='horizontal'
                             theme='dark'>
                                 <Menu.Item key='main' style={{fontSize: '20px', fontWeight: 'bold'}}>
-                                        Главная
+                                        Тестирование
                                 </Menu.Item>
                                 <Menu.Item key='stats' style={{fontSize: '20px', fontWeight: 'bold'}} disabled>
                                     Пациенты

@@ -2,7 +2,16 @@ import React from "react";
 
 import {List as ImmutableList} from "immutable";
 
-import {Button, Card, Col, List, Row, Spin, Typography, Breadcrumb} from "antd";
+import {
+    Button,
+    Col,
+    Row,
+    List,
+    Spin,
+    Typography,
+    Breadcrumb,
+    Modal
+} from "antd";
 
 const path = require('path');
 
@@ -75,7 +84,44 @@ export class FolderMenu extends React.Component {
         </List.Item>)
     }
 
+    handleBreadcrumbClick(entryName) {
+        let newPathList = this.state.curPathList;
+        while (newPathList.size > 0 && newPathList.get(-1) !== entryName) {
+            newPathList = newPathList.pop();
+        }
+        this.setState({
+            curPathList: newPathList
+        })
+    }
+
     render() {
+        let bc = (
+            <Breadcrumb style={{fontSize: 22}}>
+                <Breadcrumb.Item href=''
+                    key={'root'}
+                    onClick={(e)=>{
+                        e.preventDefault();
+                        this.handleBreadcrumbClick();
+                    }}
+                >
+                    {this.state.loaded ? this.getEntryByPath(this.state.tree, []).name : ''}
+                </Breadcrumb.Item>
+                {this.state.curPathList.map(entry=>{
+                    return (
+                        <Breadcrumb.Item href=''
+                            key={entry}
+                            onClick={(e)=>{
+                                e.preventDefault();
+                                this.handleBreadcrumbClick(entry);
+                            }}
+                        >
+                            {entry}
+                        </Breadcrumb.Item>
+                    )
+                })}
+            </Breadcrumb>
+        )
+
         let content;
 
         if (!this.state.loaded) {
@@ -83,77 +129,73 @@ export class FolderMenu extends React.Component {
         } else {
             const entry = this.getEntryByPath(this.state.tree, this.state.curPathList)
             content = (<List
-                header = {<Title>{entry.name}</Title>}
                 dataSource={entry.content}
                 renderItem={(item) => this.renderEntry(item)}
             />)
         }
 
-        let rightCol;
-        if (this.state.testCard) {
-            let testPath = path.join.apply(
-                null,
-                [this.props.tfolder.path].concat(this.state.curPathList.toJS()).concat([this.state.testCard.name])
-            );
 
-            rightCol = ( <Card
-                title={this.state.testCard.name}
-                actions={[
-                    <Button
-                        onClick={async ()=>this.props.testRunner({
-                            testMode: 'practice',
-                            testPath: testPath,
-                            config: await this.loadTestFile(testPath)
-                        })}
-                    >Тренировка</Button>,
-                    <Button
-                        onClick={async ()=>this.props.testRunner({
-                            testMode: 'exam',
-                            testPath: testPath,
-                            config: await this.loadTestFile(testPath)
-                        })}
-                    >Тест</Button>
+        let testPath = this.state.testCard ? path.join.apply(
+            null,
+            [this.props.tfolder.path].concat(this.state.curPathList.toJS()).concat([this.state.testCard.name])
+        ) : undefined;
+
+        let modal = (
+            <Modal
+                visible={this.state.testCard}
+                title={this.state.testCard?.name}
+                onCancel={()=>{this.setState({testCard: undefined})}}
+                footer={[
+                    <Button key='practice'
+                            onClick={async ()=>this.props.testRunner({
+                                testMode: 'practice',
+                                testPath: testPath,
+                                config: await this.loadTestFile(testPath)
+                            })}
+                    >
+                        Тренировка
+                    </Button>,
+                    <Button key='exam'
+                            onClick={async ()=>this.props.testRunner({
+                                testMode: 'exam',
+                                testPath: testPath,
+                                config: await this.loadTestFile(testPath)
+                            })}
+                    >
+                        Тест
+                    </Button>
                 ]}
             >
+                {this.state.testCard?.description}
+            </Modal>
+        )
 
-                {this.state.testCard.description}
-            </Card>)
-        }
+        let backBtn = (<Button
+            onClick={()=>(this.setState({curPathList: this.state.curPathList.pop()}))}
+            disabled={this.state.curPathList.size === 0}
+        >Назад</Button>)
 
-        let leftCol = undefined;
-        if (this.state.curPathList.size > 0) {
-            leftCol = ( <Button
-                onClick={()=>(this.setState({curPathList: this.state.curPathList.pop()}))}
-            >Назад</Button>)
-        }
 
         return (
             <>
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                    <Col span={4}>
-                        {leftCol}
+                <Row>
+                    <Col span={4} align='center'>
+                        {backBtn}
                     </Col>
-                    <Col span={20}>
-                        <Breadcrumb style={{fontSize: 22}}>
-                            <Breadcrumb.Item>
-                                {this.loaded? this.getEntryByPath(this.state.tree, []).name : ''}
-                            </Breadcrumb.Item>
-                            {this.state.curPathList.map(entry=>{
-                                return (
-                                    <Breadcrumb.Item>{entry}</Breadcrumb.Item>
-                                )
-                            })}
-                        </Breadcrumb>
-                    </Col>
-                </Row>
-                <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
-                    <Col span={12}>
-                        {content}
-                    </Col>
-                    <Col span={12}>
-                        {rightCol}
+                    <Col span={20} align='center'>
+                        <Row>
+                            <Col span={24}>
+                                <Title>{bc}</Title>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={24}>
+                                {content}
+                            </Col>
+                        </Row>
                     </Col>
                 </Row>
+                {modal}
             </>
         )
     }
