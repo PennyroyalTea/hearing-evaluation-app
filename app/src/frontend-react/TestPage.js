@@ -162,13 +162,10 @@ export class TestPage extends React.Component {
             return (
                 <div align='center'>
                     <Title>
-                        Конец теста! Правильных ответов: {this.state.correctAnswers} из {this.state.config.questions.length}
+                        Конец теста!
                     </Title>
-                    <Progress
-                        type='circle'
-                        strokeColor='green'
-                        percent={Math.round(100 * this.state.correctAnswers / this.state.config.questions.length)}
-                    />
+                    <Title>Правильных ответов: {this.state.correctAnswers} из {this.state.config.questions.length} ({100 * this.state.correctAnswers / this.state.config.questions.length} %)
+                    </Title>
                     <Button
                         onClick={()=>this.handleReturnClick()}
                     >
@@ -208,7 +205,13 @@ export class TestPage extends React.Component {
                         )}
                     />
                     <List
-                        grid={{gutter:16, column: 4}}
+                        grid={{gutter: 16,
+                            xs: 1,
+                            sm: 2,
+                            md: 4,
+                            lg: 4,
+                            xl: 6,
+                            xxl: 3}}
                         dataSource={this.state.config.questions[qId].answers}
                         renderItem={(answer)=>this.renderAnswer(answer)}
                     />
