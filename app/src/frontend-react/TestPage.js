@@ -33,11 +33,13 @@ export class TestPage extends React.Component {
                 }
             })
             this.setState({
-                config: {...this.state.config, ...{questions: questions}},
-                loaded: true
+                config: {...this.state.config, ...{questions: questions}}
             })
             console.log(`config: \n\n ${this.state.config}`)
         }
+        this.setState({
+            loaded: true
+        })
     }
 
     handleImageClick(image) {
