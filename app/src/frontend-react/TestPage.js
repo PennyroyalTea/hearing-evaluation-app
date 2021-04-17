@@ -1,7 +1,7 @@
 import React from "react";
 import {Progress, message, Image, Typography, List, Button, Col, Row} from "antd";
 
-const shuffle = require('shuffle-array');
+const _ = require('lodash');
 const path = require('path');
 
 const {Title} = Typography;
@@ -38,13 +38,13 @@ export class TestPage extends React.Component {
                 }
             })
             this.setState({
-                config: {...this.state.config, ...{questions: needShuffling ? shuffle(questions) : questions}}
+                config: {...this.state.config, ...{questions: needShuffling ? _.shuffle(questions) : questions}}
             })
             console.log(`config: \n\n ${JSON.stringify(this.state.config)}`)
         } else {
             if (needShuffling) {
                 this.setState({
-                    config: {...this.state.config, ...{questions: shuffle(this.state.config.questions)}}
+                    config: {...this.state.config, ...{questions: _.shuffle(this.state.config.questions)}}
                 })
             }
         }
