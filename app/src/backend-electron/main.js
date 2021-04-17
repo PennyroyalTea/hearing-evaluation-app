@@ -10,10 +10,18 @@ const isDev = require('electron-is-dev');
 
 const path = require('path')
 
-const {Storage} = require('./Storage')
+const low = require('lowdb')
+const FileSync = require('lowdb/adapters/FileSync')
+
 const {Loader, loadJson} = require('./Loader')
 
-let storage = new Storage()
+
+const adapterConfig = new FileSync(path.join(app.getPath('userData'), 'config.json'))
+const configStorage = low(adapterConfig)
+
+const adapterDB = new FileSync(path.join(app.getPath('userData'), 'data.json'))
+const db = low(adapterDB)
+
 let loader = new Loader()
 
 async function createWindow() {
@@ -79,12 +87,15 @@ ipcMain.handle('get-app-path', () => {
     return app.getPath('userData')
 })
 
-ipcMain.handle('write-local', (event, name, val) => {
-    storage.setProp(name, val)
+ipcMain.handle('write-config', (event, name, val) => {
+    configStorage.set(name, val)
+        .write()
 })
 
-ipcMain.handle('read-local', (event, name) => {
-    return storage.getProp(name)
+ipcMain.handle('read-config', (event, name) => {
+    console.log(`config storage: ${JSON.stringify(configStorage)}`)
+    return configStorage.get(name)
+        .value()
 })
 
 ipcMain.handle('load-dir-structure', (event, rootPath) => {

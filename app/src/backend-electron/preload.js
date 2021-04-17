@@ -8,10 +8,10 @@ contextBridge.exposeInMainWorld('backend', {
         return ipcRenderer.invoke('get-app-path')
     },
     writeLocal: (name, val) => {
-        return ipcRenderer.invoke('write-local', name, val)
+        return ipcRenderer.invoke('write-config', name, val)
     },
     readLocal: (name) => {
-        return ipcRenderer.invoke('read-local', name)
+        return ipcRenderer.invoke('read-config', name)
     },
     loadDirStructure: (path) => {
         return ipcRenderer.invoke('load-dir-structure', path)
