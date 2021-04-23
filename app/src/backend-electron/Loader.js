@@ -61,7 +61,11 @@ class Loader {
 
             if (await fileExists(path.join(curPath, 'config.json'))) {
                 curType = 'test';
-                curDescription = (await loadJson(path.join(curPath, 'config.json'))).description;
+                try {
+                    curDescription = (await loadJson(path.join(curPath, 'config.json'))).description;
+                } catch (e) {
+                    throw `can't load description from ${path.join(curPath, 'config.json')}`;
+                }
             } else {
                 curType = 'dir';
             }

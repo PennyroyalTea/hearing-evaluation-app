@@ -35,7 +35,8 @@ export class FolderMenu extends React.Component {
     }
 
     async loadFolderStructure() {
-        const res = await window.backend.loadDirStructure(this.props.tfolder.path)
+        let res;
+        res = await window.backend.loadDirStructure(this.props.tfolder.path)
         this.setState({
             loaded: true,
             tree: res
