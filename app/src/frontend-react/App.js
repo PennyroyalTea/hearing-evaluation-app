@@ -10,6 +10,7 @@ import {Layout,
 
 
 import MainPage from "./MainPage";
+import PatientsPage from "./PatientsPage";
 import StatisticsPage from "./StatisticsPage";
 import SettingsPage from "./SettingsPage";
 
@@ -23,12 +24,20 @@ class App extends React.Component {
             tfolder: {
                 status: 'loading', // loading | error | ok
                 path: undefined
-            }
+            },
+            currentUser: undefined // user id
         }
     }
 
     async componentDidMount() {
         await this.initFolder();
+    }
+
+    async selectUser(userId) {
+        const user = await window.backend.getUserById(userId)
+        this.setState({
+            currentUser: user
+        })
     }
 
     async selectFolder() {
@@ -80,6 +89,13 @@ class App extends React.Component {
             case 'main':
                 content = <MainPage tfolder={this.state.tfolder}/>
                 break;
+            case 'patients':
+                content = (
+                    <PatientsPage
+                        userChooser={(userId) => this.selectUser(userId)}
+                        currentUser={this.state.currentUser}
+                        />)
+                break;
             case 'stats':
                 content = <StatisticsPage/>
                 break;
@@ -106,10 +122,13 @@ class App extends React.Component {
                             mode='horizontal'
                             theme='dark'>
                                 <Menu.Item key='main' style={{fontSize: '20px', fontWeight: 'bold'}}>
-                                        Тестирование
+                                    Тестирование
                                 </Menu.Item>
-                                <Menu.Item key='stats' style={{fontSize: '20px', fontWeight: 'bold'}} disabled>
+                                <Menu.Item key='patients' style={{fontSize: '20px', fontWeight: 'bold'}}>
                                     Пациенты
+                                </Menu.Item>
+                                <Menu.Item key='stats' style={{fontSize: '20px', fontWeight: 'bold'}}>
+                                    Статистика
                                 </Menu.Item>
                                 <Menu.Item key='settings' style={{fontSize: '20px', fontWeight: 'bold'}}>
                                     Настройки
