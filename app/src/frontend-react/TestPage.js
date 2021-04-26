@@ -1,5 +1,5 @@
 import React from "react";
-import {Progress, message, Image, Typography, List, Button, Col, Row} from "antd";
+import {message, Image, Typography, List, Button, Col, Row} from "antd";
 
 const _ = require('lodash');
 const path = require('path');
@@ -124,8 +124,8 @@ export class TestPage extends React.Component {
 
     handleReturnClick() {
         this.props.testEnder({
-            userId: 'admin',
-            testId: 'THE-test',
+            userId: this.props.currentUser.id,
+            testId: -1, // TODO: use actual testId
             succ: this.state.correctAnswers,
             all: this.state.config.questions.length,
             ts: Date.now()

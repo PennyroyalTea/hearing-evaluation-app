@@ -30,8 +30,9 @@ class MainPage extends React.Component {
         })
     }
 
-    finishTest(result) {
+    async finishTest(result) {
         console.log(`test finished ${result}`)
+        await window.backend.saveTestResult(result);
         this.setState({
             mode: 'menu'
         })
@@ -43,6 +44,7 @@ class MainPage extends React.Component {
                 return this.props.tfolder.status === 'ok' ? (
                     <FolderMenu
                     tfolder={this.props.tfolder}
+                    currentUser={this.props.currentUser}
                     pathList={this.state.savedPathList}
                     testRunner={p=>this.runTest(p)}
                     pathUpdater={path=>this.setState({savedPathList: path})}
@@ -54,6 +56,7 @@ class MainPage extends React.Component {
                     tfolder={this.props.tfolder}
                     testMode={this.state.testMode}
                     config={this.state.testConfig}
+                    currentUser={this.props.currentUser}
                     testEnder={result=>this.finishTest(result)}
                 />)
             default:

@@ -87,7 +87,7 @@ class App extends React.Component {
         let content;
         switch (this.state.page) {
             case 'main':
-                content = <MainPage tfolder={this.state.tfolder}/>
+                content = <MainPage tfolder={this.state.tfolder} currentUser={this.state.currentUser}/>
                 break;
             case 'patients':
                 content = (

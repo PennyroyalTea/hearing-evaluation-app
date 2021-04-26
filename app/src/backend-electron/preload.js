@@ -27,5 +27,8 @@ contextBridge.exposeInMainWorld('backend', {
     },
     removeUserById: (id) => {
         return ipcRenderer.invoke('db/remove-user-by-id', id)
+    },
+    saveTestResult: (result) => {
+        return ipcRenderer.invoke('db/save-test-result', result)
     }
 })

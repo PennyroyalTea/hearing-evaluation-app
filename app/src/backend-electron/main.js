@@ -142,6 +142,11 @@ function addDBHandlers() {
             .removeById(id)
             .write()
     })
+    ipcMain.handle('db/save-test-result', (event, result) => {
+        return db.get('attempts')
+            .insert(result)
+            .write()
+    })
 
 }
 

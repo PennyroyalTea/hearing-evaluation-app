@@ -47,10 +47,6 @@ export default class PatientsPage extends React.Component {
     }
 
     async handleNewPatientClick() {
-        // await window.backend.addUser({
-        //     surname: "starkov",
-        //     name: "boris"
-        // })
         this.setState({
             showUserCreateModal: true
         })
@@ -80,7 +76,7 @@ export default class PatientsPage extends React.Component {
     }
 
     renderPatient(patient) {
-        return (<List.Item>
+        return (<List.Item key={patient.id}>
             <Card hoverable onClick={()=>this.handleCardClick(patient.id)} align='center'>
                 <Text strong>{patient.surname}</Text>
                 <br/>

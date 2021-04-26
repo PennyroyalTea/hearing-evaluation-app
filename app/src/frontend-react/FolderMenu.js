@@ -10,7 +10,8 @@ import {
     Spin,
     Typography,
     Breadcrumb,
-    Modal
+    Modal,
+    Popover
 } from "antd";
 
 const path = require('path');
@@ -156,15 +157,11 @@ export class FolderMenu extends React.Component {
                     >
                         Тренировка
                     </Button>,
-                    <Button key='exam'
-                            onClick={async ()=>this.props.testRunner({
-                                testMode: 'exam',
-                                testPath: testPath,
-                                config: await this.loadTestFile(testPath)
-                            })}
-                    >
-                        Тест
-                    </Button>
+                    <ExamButton
+                        testPath={testPath}
+                        {...this.props}
+                        testFileLoader={(testPath) => this.loadTestFile(testPath)}
+                    />
                 ]}
             >
                 {this.state.testCard?.description}
@@ -199,5 +196,35 @@ export class FolderMenu extends React.Component {
                 {modal}
             </>
         )
+    }
+}
+
+class ExamButton extends React.Component {
+    render() {
+        const btn = (
+            <Button key='exam'
+                    disabled={!this.props.currentUser}
+                    onClick={async ()=>this.props.testRunner({
+                        testMode: 'exam',
+                        testPath: this.props.testPath,
+                        config: await this.props.testFileLoader(this.props.testPath)
+                    })}
+            >
+                Тест
+            </Button>
+        );
+
+        if (this.props.currentUser) {
+            return btn;
+        } else {
+            return (
+                <Popover
+                    content={'Выберите пациента во вкладке "пациенты"'}
+                    trigger='hover'
+                >
+                    {btn}
+                </Popover>
+            )
+        }
     }
 }
