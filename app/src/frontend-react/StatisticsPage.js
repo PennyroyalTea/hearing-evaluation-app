@@ -45,7 +45,6 @@ export default class StatisticsPage extends React.Component {
         });
         attempts = await Promise.all(attempts);
         attempts.sort((l, r)=>(r['ts'] - l['ts']));
-        console.log(`attempts: ${JSON.stringify(attempts)}`)
         this.setState({
             data: attempts
         })

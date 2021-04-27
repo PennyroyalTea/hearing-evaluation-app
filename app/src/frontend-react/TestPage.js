@@ -122,8 +122,12 @@ export class TestPage extends React.Component {
         }
     }
 
+    handleQuitClick() {
+        this.props.testEnder(false, this.props.testMode, {})
+    }
+
     handleReturnClick() {
-        this.props.testEnder(this.props.testMode, {
+        this.props.testEnder(true, this.props.testMode, {
             userId: this.props.currentUser.id,
             testId: this.state.config.name,
             succ: this.state.correctAnswers,
@@ -176,6 +180,14 @@ export class TestPage extends React.Component {
         }
 
         return (
+            <>
+            <Row>
+                <Col span={24}>
+                    <Button onClick={() => this.handleQuitClick()}>
+                        Выйти досрочно
+                    </Button>
+                </Col>
+            </Row>
             <Row>
                 <Col span={24} align={'center'}>
                     <p>
@@ -212,7 +224,7 @@ export class TestPage extends React.Component {
                     />
                 </Col>
             </Row>
-
+            </>
         )
     }
 }

@@ -30,9 +30,13 @@ class MainPage extends React.Component {
         })
     }
 
-    async finishTest(testMode, result) {
-        console.log(`test finished mode ${testMode} | result ${JSON.stringify(result)}`)
-        if (testMode === 'exam') {
+    async finishTest(finished, testMode, result) {
+        if (!finished) {
+            console.log(`not finished`)
+        } else {
+            console.log(`test finished mode ${testMode} | result ${JSON.stringify(result)}`)
+        }
+        if (finished && testMode === 'exam') {
             await window.backend.saveTestResult(result);
         }
         this.setState({
@@ -59,7 +63,7 @@ class MainPage extends React.Component {
                     testMode={this.state.testMode}
                     config={this.state.testConfig}
                     currentUser={this.props.currentUser}
-                    testEnder={(testMode, result)=>this.finishTest(testMode, result)}
+                    testEnder={(finished, testMode, result)=>this.finishTest(finished, testMode, result)}
                 />)
             default:
                 return <Empty description='Exception: Wrong mode in MainPage'/>
