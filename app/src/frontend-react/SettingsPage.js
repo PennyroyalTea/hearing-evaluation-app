@@ -5,7 +5,7 @@ import {Typography, Button, Divider} from "antd";
 const {Text, Title} = Typography;
 
 class SettingsPage extends React.Component {
-    version = '1.0.3'
+    version = '1.0.4'
 
     render() {
         return (

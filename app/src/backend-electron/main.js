@@ -6,7 +6,7 @@ const {
     dialog,
 } = require('electron')
 
-const isDev = require('electron-is-dev');
+const isDev = require('electron-is-dev')
 
 const path = require('path')
 
@@ -15,6 +15,7 @@ const low = require('lowdb')
 const FileSync = require('lowdb/adapters/FileSync')
 
 const {Loader, loadJson} = require('./Loader')
+const {CSVHelper} = require('./CSVHelper')
 
 
 const adapterConfig = new FileSync(path.join(app.getPath('userData'), 'config.json'))
@@ -84,7 +85,7 @@ app.on('activate', function () {
 function addOSHandlers() {
     ipcMain.handle('os/select-folder', () => {
         return dialog.showOpenDialog({
-            title: 'Выберите папку',
+            title: 'Выберите корневую папку с тестами',
             properties: ['openDirectory']
         })
     })
@@ -147,7 +148,22 @@ function addDBHandlers() {
             .insert(result)
             .write()
     })
+    ipcMain.handle('db/get-n-attempts', (event, n) => {
+        return db.get('attempts')
+            .take(n)
+            .value()
+    })
+    ipcMain.handle('db/save-attempts-csv', async (event, level) => {
+        const attempts = db.get('attempts').value();
+        const users = db.get('users').value();
 
+        const dialogRes = await dialog.showSaveDialog({title: 'Выберите, куда сохранить результат'});
+        if (dialogRes.canceled) return false;
+        const {filePath} = dialogRes;
+
+        const helper = new CSVHelper()
+        await helper.commit(attempts, users, filePath, level);
+    })
 }
 
 addOSHandlers();

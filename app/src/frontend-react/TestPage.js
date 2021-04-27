@@ -125,7 +125,7 @@ export class TestPage extends React.Component {
     handleReturnClick() {
         this.props.testEnder({
             userId: this.props.currentUser.id,
-            testId: -1, // TODO: use actual testId
+            testId: this.state.config.name,
             succ: this.state.correctAnswers,
             all: this.state.config.questions.length,
             ts: Date.now()
