@@ -127,13 +127,13 @@ export class TestPage extends React.Component {
     }
 
     handleReturnClick() {
-        this.props.testEnder(true, this.props.testMode, {
+        this.props.testEnder(true, this.props.testMode, this.props.testMode === 'exam' ? {
             userId: this.props.currentUser.id,
             testId: this.state.config.name,
             succ: this.state.correctAnswers,
             all: this.state.config.questions.length,
             ts: Date.now()
-        })
+        } : {})
     }
 
     renderAnswer(answer) {
