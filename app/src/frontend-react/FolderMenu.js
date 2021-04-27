@@ -155,7 +155,7 @@ export class FolderMenu extends React.Component {
                                 config: await this.loadTestFile(testPath)
                             })}
                     >
-                        Тренировка
+                        Обучение
                     </Button>,
                     <ExamButton
                         testPath={testPath}

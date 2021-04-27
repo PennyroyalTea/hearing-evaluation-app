@@ -191,7 +191,7 @@ export class TestPage extends React.Component {
             <Row>
                 <Col span={24} align={'center'}>
                     <p>
-                        Режим: {this.props.testMode === 'practice' ? 'тренировка' : 'тестирование'}
+                        Режим: {this.props.testMode === 'practice' ? 'Обучение' : 'Тестирование'}
                     </p>
                     <p>
                         Вопрос {qId + 1} / {this.state.config.questions.length}
