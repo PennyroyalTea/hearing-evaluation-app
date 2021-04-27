@@ -166,9 +166,9 @@ export class TestPage extends React.Component {
             return (
                 <div align='center'>
                     <Title>
-                        Конец теста!
+                        Конец {this.props.testMode === 'exam' ? 'теста' : 'обучения'}!
                     </Title>
-                    <Title>Правильных ответов: {this.state.correctAnswers} из {this.state.config.questions.length} ({100 * this.state.correctAnswers / this.state.config.questions.length} %)
+                    <Title>Правильных ответов: {this.state.correctAnswers} из {this.state.config.questions.length} ({(100 * this.state.correctAnswers / this.state.config.questions.length).toFixed(1)} %)
                     </Title>
                     <Button
                         onClick={()=>this.handleReturnClick()}
@@ -181,49 +181,51 @@ export class TestPage extends React.Component {
 
         return (
             <>
-            <Row>
-                <Col span={24}>
-                    <Button onClick={() => this.handleQuitClick()}>
-                        Выйти досрочно
-                    </Button>
-                </Col>
-            </Row>
-            <Row>
-                <Col span={24} align={'center'}>
-                    <p>
-                        Режим: {this.props.testMode === 'practice' ? 'Обучение' : 'Тестирование'}
-                    </p>
-                    <p>
-                        Вопрос {qId + 1} / {this.state.config.questions.length}
-                    </p>
-                    <br/>
-                    {
-                        this.state.config.settings.multipleAnswers ? (
-                            <Button
-                                onClick={()=>this.handleNextClick()}
-                            >
-                                Ответить
-                            </Button>
-                        ) : ''
-                    }
-                    <br/>
-                    <audio
-                        controls
-                        src={path.join(
-                            'file://',
-                            this.props.tfolder.path,
-                            this.state.config.settings.resourceDir,
-                            this.state.config.questions[qId].sound
-                        )}
-                    />
+                <Row>
+                    <Col span={24}>
+                        <Button onClick={() => this.handleQuitClick()}>
+                            Выйти досрочно
+                        </Button>
+                    </Col>
+                </Row>
+                <Row>
+                    <Col span={24} align={'center'}>
+                        <Title level={1}>
+                            Режим: {this.props.testMode === 'practice' ? 'Обучение' : 'Тестирование'}
+                        </Title>
+                        <Title level={4}>
+                            Вопрос {qId + 1} / {this.state.config.questions.length}
+                        </Title>
+                        <br/>
+                        {
+                            this.state.config.settings.multipleAnswers ? (
+                                <Button
+                                    onClick={()=>this.handleNextClick()}
+                                >
+                                    Ответить
+                                </Button>
+                            ) : ''
+                        }
+                        <br/>
+                        <audio
+                            controls
+                            src={path.join(
+                                'file://',
+                                this.props.tfolder.path,
+                                this.state.config.settings.resourceDir,
+                                this.state.config.questions[qId].sound
+                            )}
+                        />
+                    </Col>
+                </Row>
+                <Row align={'center'}>
                     <List
                         grid={{gutter: 16,
                             columns: 5}}
                         dataSource={this.state.config.questions[qId].answers}
                         renderItem={(answer)=>this.renderAnswer(answer)}
                     />
-                </Col>
-            </Row>
+                </Row>
             </>
         )
     }
