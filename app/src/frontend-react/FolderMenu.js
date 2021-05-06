@@ -177,10 +177,12 @@ export class FolderMenu extends React.Component {
         return (
             <>
                 <Row>
-                    <Col span={4} align='center'>
+                    <Col span={24} align='left'>
                         {backBtn}
                     </Col>
-                    <Col span={20} align='center'>
+                </Row>
+                <Row>
+                    <Col span={24} align='center'>
                         <Row>
                             <Col span={24}>
                                 <Title>{bc}</Title>
