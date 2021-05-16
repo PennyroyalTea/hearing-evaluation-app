@@ -41,6 +41,7 @@ export default class StatisticsPage extends React.Component {
             attempt['patronal'] = user.patronal;
             attempt['time'] = this._formatDate(new Date(attempt.ts));
             attempt['result'] = `${attempt['succ']} / ${attempt['all']} (${(100 * attempt['succ'] / attempt['all']).toFixed(1)} %)`;
+            attempt['avgSpeed'] = `${(attempt['averageSpeed'] / 1000)?.toFixed(2)} сек.`;
             return attempt;
         });
         attempts = await Promise.all(attempts);
@@ -79,8 +80,9 @@ export default class StatisticsPage extends React.Component {
                     <ColumnGroup title='Тест'>
                         <Column title='название' dataIndex='testId' key='tid' />
                         <Column title='результат' dataIndex='result' key='result' />
+                        <Column title='среднее время' dataIndex='avgSpeed' key='avgSpeed' />
                     </ColumnGroup>
-                    <Column title='время' dataIndex='time' key='time' />
+                    <Column title='дата' dataIndex='time' key='time' />
                 </Table>
             </Space>
         )

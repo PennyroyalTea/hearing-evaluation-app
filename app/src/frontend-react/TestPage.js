@@ -1,8 +1,12 @@
 import React from "react";
 import {message, Image, Typography, List, Button, Col, Row} from "antd";
 
+import {List as ImmutableList} from 'immutable';
+
 const _ = require('lodash');
 const path = require('path');
+
+
 
 const {Title} = Typography;
 
@@ -14,8 +18,12 @@ export class TestPage extends React.Component {
             config: this.props.config,
             questionId: 0,
             correctAnswers: 0,
-            ended: false
+            answerSpeeds: ImmutableList(),
+            ended: false,
+            showImages: this.props.config.settings.delay === undefined,
+            soundPlayed: false
         }
+        console.log(`show images: ${this.props.config.settings.delay === undefined}`)
     }
 
     componentDidMount() {
@@ -55,6 +63,8 @@ export class TestPage extends React.Component {
     }
 
     handleImageClick(image) {
+        if (!this.state.soundPlayed) return;
+
         if (!this.state.config.settings.multipleAnswers) {
             this.setState({
                 [`img_${image}`]: true
@@ -78,6 +88,12 @@ export class TestPage extends React.Component {
 
 
     handleNextClick() {
+        this.setState({
+            answerSpeeds: this.state.answerSpeeds.push(
+                Date.now() - this.state.soundPlayedTimestamp - this.state.config.settings.delay
+            )
+        })
+
         let correct = true;
         for (let answer of this.state.config.questions[this.state.questionId].answers) {
             let isSelected = this.state[`img_${answer.image}`] || false
@@ -100,7 +116,9 @@ export class TestPage extends React.Component {
             })
         }
 
-        if (this.props.testMode === 'practice') {
+        const questionsTotal = this.state.config.questions.length
+
+        if (this.props.testMode === 'practice' && this.state.questionId + 1 !== questionsTotal) {
             if (correct) {
                 message.success('Правильно!', 2)
             } else {
@@ -110,14 +128,15 @@ export class TestPage extends React.Component {
             message.warn('Ответ принят!', 2)
         }
 
-        const questionsTotal = this.state.config.questions.length
         if (this.state.questionId + 1 === questionsTotal) {
             this.setState({
                 ended: true
             })
         } else {
             this.setState({
-                questionId: this.state.questionId + 1
+                questionId: this.state.questionId + 1,
+                showImages: this.state.config.settings.delay === undefined,
+                soundPlayed: false
             })
         }
     }
@@ -132,20 +151,35 @@ export class TestPage extends React.Component {
             testId: this.state.config.name,
             succ: this.state.correctAnswers,
             all: this.state.config.questions.length,
+            averageSpeed: this.state.answerSpeeds.reduce((sum, cur)=>sum+cur) / this.state.answerSpeeds.size,
             ts: Date.now()
         } : {})
     }
 
     handleAudioEnded() {
-        console.log('ended:)')
+        console.log('sound ended')
+        if (this.state.config.settings.delay !== undefined) {
+            setTimeout(() => {this.setState({showImages: true})}, this.state.config.settings.delay * 1000)
+        }
+        this.setState({
+            soundPlayed: true,
+            soundPlayedTimestamp: Date.now()
+        })
     }
 
     renderAnswer(answer) {
         const isSelected = this.state[`img_${answer.image}`];
+        const isVisible = this.state.showImages;
+
+        if (!isVisible) {
+            return (<List.Item>
+                <div style={{backgroundColor: "black", width: "150px", height: "150px"}}/>
+            </List.Item>);
+        }
 
         return (<List.Item>
             <Image
-                width={'180px'}
+                width={'150px'}
                 preview={false}
                 src={path.join(
                     'file://',
@@ -238,7 +272,7 @@ export class TestPage extends React.Component {
                         align='center'
                         grid={{
                             gutter: 16,
-                            column: 3}}
+                            column: Math.min(this.state.config.questions[qId].answers.size, 5)}}
                         dataSource={this.state.config.questions[qId].answers}
                         renderItem={(answer)=>this.renderAnswer(answer)}
                     />
@@ -263,8 +297,10 @@ class AudioPlayer extends React.Component {
 
     componentDidUpdate(prevProps, prevState, snapshot) {
         if (prevProps.src !== this.props.src) {
+            let audio = new Audio(this.props.src);
+            audio.onended = this.props.onended;
             this.setState({
-                audio: new Audio(this.props.src),
+                audio: audio,
                 clicked: false
             })
         }
