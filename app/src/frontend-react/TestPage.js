@@ -136,11 +136,16 @@ export class TestPage extends React.Component {
         } : {})
     }
 
+    handleAudioEnded() {
+        console.log('ended:)')
+    }
+
     renderAnswer(answer) {
         const isSelected = this.state[`img_${answer.image}`];
 
         return (<List.Item>
             <Image
+                width={'180px'}
                 preview={false}
                 src={path.join(
                     'file://',
@@ -182,51 +187,96 @@ export class TestPage extends React.Component {
         return (
             <>
                 <Row>
-                    <Col span={24}>
-                        <Button onClick={() => this.handleQuitClick()}>
-                            Выйти досрочно
+                    <Col span={1}/>
+                    <Col span={4} align='left'>
+                        <Button size='large' onClick={() => this.handleQuitClick()}>
+                            &larr; Выйти досрочно
                         </Button>
                     </Col>
-                </Row>
-                <Row>
-                    <Col span={24} align={'center'}>
-                        <Title level={1}>
-                            Режим: {this.props.testMode === 'practice' ? 'Обучение' : 'Тестирование'}
-                        </Title>
-                        <Title level={4}>
+                    <Col span={14} align='center'>
+                        <Title level={3}>
                             Вопрос {qId + 1} / {this.state.config.questions.length}
                         </Title>
-                        <br/>
-                        {
-                            this.state.config.settings.multipleAnswers ? (
-                                <Button
-                                    onClick={()=>this.handleNextClick()}
-                                >
-                                    Ответить
-                                </Button>
-                            ) : ''
-                        }
-                        <br/>
-                        <audio
-                            controls
+                    </Col>
+                    <Col span={4} align='center'>
+                        <Title level={4}>
+                            Режим: {this.props.testMode === 'practice' ? 'Обучение' : 'Тестирование'}
+                        </Title>
+                    </Col>
+                    <Col span={1}/>
+                </Row>
+                <Row gutter={[16, 16]}>
+                    <Col span={9}/>
+                    <Col span={this.state.config.settings.multipleAnswers ? 3 : 6} align={'center'}>
+                        <AudioPlayer
+                            once={this.props.testMode === 'exam'}
                             src={path.join(
                                 'file://',
                                 this.props.tfolder.path,
                                 this.state.config.settings.resourceDir,
                                 this.state.config.questions[qId].sound
                             )}
+                            onended={() => this.handleAudioEnded()}
                         />
                     </Col>
+                    <Col span={this.state.config.settings.multipleAnswers ? 3 : 0}>
+                        {
+                            this.state.config.settings.multipleAnswers ? (
+                                <Button
+                                    size='large'
+                                    onClick={()=>this.handleNextClick()}
+                                >
+                                    Принять ответ
+                                </Button>
+                            ) : ''
+                        }
+                    </Col>
+                    <Col span={9}/>
                 </Row>
-                <Row align={'center'}>
+                <Row justify='center'>
                     <List
-                        grid={{gutter: 16,
-                            columns: 5}}
+                        align='center'
+                        grid={{
+                            gutter: 16,
+                            column: 3}}
                         dataSource={this.state.config.questions[qId].answers}
                         renderItem={(answer)=>this.renderAnswer(answer)}
                     />
                 </Row>
             </>
+        )
+    }
+}
+
+class AudioPlayer extends React.Component {
+    constructor(props) {
+        super(props);
+
+        let audio = new Audio(this.props.src)
+        audio.onended = this.props.onended;
+
+        this.state = {
+            audio: audio,
+            clicked: false
+        }
+    }
+
+    handleClick() {
+        this.setState({
+            clicked: true
+        })
+        this.state.audio.play()
+    }
+
+    render() {
+        return (
+            <Button
+                size='large'
+                disabled = {this.state.clicked && this.props.once}
+                onClick={() => this.handleClick()}
+            >
+                Звук
+            </Button>
         )
     }
 }
