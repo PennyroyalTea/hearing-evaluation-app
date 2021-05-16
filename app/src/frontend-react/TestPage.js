@@ -261,6 +261,15 @@ class AudioPlayer extends React.Component {
         }
     }
 
+    componentDidUpdate(prevProps, prevState, snapshot) {
+        if (prevProps.src !== this.props.src) {
+            this.setState({
+                audio: new Audio(this.props.src),
+                clicked: false
+            })
+        }
+    }
+
     handleClick() {
         this.setState({
             clicked: true
