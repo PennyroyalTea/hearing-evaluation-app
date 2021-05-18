@@ -3,6 +3,9 @@ import {message, Image, Typography, List, Button, Col, Row} from "antd";
 
 import {List as ImmutableList} from 'immutable';
 
+import AudioPlayer from "./AudioPlayer";
+import TestResult from "./TestResult";
+
 const _ = require('lodash');
 const path = require('path');
 
@@ -38,6 +41,7 @@ export class TestPage extends React.Component {
                 return {
                     sound: sound,
                     answers: this.state.config.questionsShared.images.map(imagePath => {
+                        console.log(`${JSON.stringify(this.state.config.questionsShared.answers[id])} : ${imagePath} : ${path.basename(imagePath)}`)
                         return {
                             image: imagePath,
                             correct: this.state.config.questionsShared.answers[id].includes(path.basename(imagePath))
@@ -95,6 +99,8 @@ export class TestPage extends React.Component {
         })
 
         let correct = true;
+
+        console.log(`answers: ${JSON.stringify(this.state.config.questions[this.state.questionId].answers)}`)
         for (let answer of this.state.config.questions[this.state.questionId].answers) {
             let isSelected = this.state[`img_${answer.image}`] || false
             if (isSelected !== answer.correct) {
@@ -202,20 +208,12 @@ export class TestPage extends React.Component {
         }
 
         if (this.state.ended) {
-            return (
-                <div align='center'>
-                    <Title>
-                        Конец {this.props.testMode === 'exam' ? 'теста' : 'обучения'}!
-                    </Title>
-                    <Title>Правильных ответов: {this.state.correctAnswers} из {this.state.config.questions.length} ({(100 * this.state.correctAnswers / this.state.config.questions.length).toFixed(1)} %)
-                    </Title>
-                    <Button
-                        onClick={()=>this.handleReturnClick()}
-                    >
-                        Вернуться в меню
-                    </Button>
-                </div>
-            )
+            return <TestResult
+                testMode={this.props.testMode}
+                correctAnswers={this.props.correctAnswers}
+                config={this.state.config}
+                handleReturnClick={()=>this.handleReturnClick()}
+            />
         }
 
         return (
@@ -278,50 +276,6 @@ export class TestPage extends React.Component {
                     />
                 </Row>
             </>
-        )
-    }
-}
-
-class AudioPlayer extends React.Component {
-    constructor(props) {
-        super(props);
-
-        let audio = new Audio(this.props.src)
-        audio.onended = this.props.onended;
-
-        this.state = {
-            audio: audio,
-            clicked: false
-        }
-    }
-
-    componentDidUpdate(prevProps, prevState, snapshot) {
-        if (prevProps.src !== this.props.src) {
-            let audio = new Audio(this.props.src);
-            audio.onended = this.props.onended;
-            this.setState({
-                audio: audio,
-                clicked: false
-            })
-        }
-    }
-
-    handleClick() {
-        this.setState({
-            clicked: true
-        })
-        this.state.audio.play()
-    }
-
-    render() {
-        return (
-            <Button
-                size='large'
-                disabled = {this.state.clicked && this.props.once}
-                onClick={() => this.handleClick()}
-            >
-                Звук
-            </Button>
         )
     }
 }
