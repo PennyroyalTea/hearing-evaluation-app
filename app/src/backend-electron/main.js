@@ -157,7 +157,10 @@ function addDBHandlers() {
         const attempts = db.get('attempts').value();
         const users = db.get('users').value();
 
-        const dialogRes = await dialog.showSaveDialog({title: 'Выберите, куда сохранить результат'});
+        const dialogRes = await dialog.showSaveDialog({
+            title: 'Выберите, куда сохранить результат',
+            filters: [{name: 'csv', extensions: ['.csv']}]
+        });
         if (dialogRes.canceled) return false;
         const {filePath} = dialogRes;
 
