@@ -1,5 +1,3 @@
-require('update-electron-app')()
-
 const {
     app,
     protocol,
