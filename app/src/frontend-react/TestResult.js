@@ -20,6 +20,7 @@ function TestResult(props) {
             </Title>
             <Title>Правильных ответов: {props.correctAnswers} из {props.config.questions.length} ({(100 * props.correctAnswers / props.config.questions.length).toFixed(1)} %)
             </Title>
+            <Title>Среднее время ответа: {(props.answerSpeeds.reduce((sum, cur)=>sum+cur) / props.answerSpeeds.size / 1000).toFixed(1)} с.</Title>
             {treshold}
             <Button
                 onClick={()=>props.handleReturnClick()}

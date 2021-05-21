@@ -102,7 +102,7 @@ export class TestPage extends React.Component {
     async handleNextClick() {
         this.setState({
             answerSpeeds: this.state.answerSpeeds.push(
-                Date.now() - this.state.soundPlayedTimestamp - this.state.config.settings.delay
+                Date.now() - this.state.soundPlayedTimestamp - (this.state.config.settings?.delay || 0)
             )
         })
 
@@ -245,6 +245,7 @@ export class TestPage extends React.Component {
                 testMode={this.props.testMode}
                 correctAnswers={this.state.correctAnswers}
                 config={this.state.config}
+                answerSpeeds={this.state.answerSpeeds}
                 handleReturnClick={()=>this.handleReturnClick()}
             />
         }
