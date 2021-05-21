@@ -1,5 +1,12 @@
 import React from "react";
-import {message, Image, Typography, List, Button, Col, Row} from "antd";
+import {Image,
+    Typography,
+    List,
+    Button,
+    Col,
+    Row,
+    Modal
+} from "antd";
 
 import {List as ImmutableList} from 'immutable';
 
@@ -24,7 +31,8 @@ export class TestPage extends React.Component {
             answerSpeeds: ImmutableList(),
             ended: false,
             showImages: this.props.config.settings.delay === undefined,
-            soundPlayed: false
+            soundPlayed: false,
+            questionResult: undefined
         }
         console.log(`show images: ${this.props.config.settings.delay === undefined}`)
     }
@@ -91,7 +99,7 @@ export class TestPage extends React.Component {
     }
 
 
-    handleNextClick() {
+    async handleNextClick() {
         this.setState({
             answerSpeeds: this.state.answerSpeeds.push(
                 Date.now() - this.state.soundPlayedTimestamp - this.state.config.settings.delay
@@ -124,15 +132,40 @@ export class TestPage extends React.Component {
 
         const questionsTotal = this.state.config.questions.length
 
-        if (this.props.testMode === 'practice' && this.state.questionId + 1 !== questionsTotal) {
+        let result;
+
+        if (this.props.testMode === 'practice') {
             if (correct) {
-                message.success('Правильно!', 2)
+                result = {
+                    type: '+',
+                    title: 'Правильный ответ',
+                    description: 'правильно!',
+                    src: 'succFace.jpeg'
+                }
             } else {
-                message.error('Неправильно :(', 2)
+                result = {
+                    type: '-',
+                    title: 'Неправильный ответ',
+                    description: 'неверно :(',
+                    src: 'failFace.jpeg'
+                }
             }
         } else {
-            message.warn('Ответ принят!', 2)
+            result = {
+                type: '?',
+                title: 'Ответ принят',
+                description: '',
+                src: 'confFace.jpeg'
+            }
         }
+
+        this.setState({
+            questionResult: result
+        })
+
+        await new Promise(r => setTimeout(r, 1000));
+
+        this.setState( {questionResult: undefined});
 
         if (this.state.questionId + 1 === questionsTotal) {
             this.setState({
@@ -210,7 +243,7 @@ export class TestPage extends React.Component {
         if (this.state.ended) {
             return <TestResult
                 testMode={this.props.testMode}
-                correctAnswers={this.props.correctAnswers}
+                correctAnswers={this.state.correctAnswers}
                 config={this.state.config}
                 handleReturnClick={()=>this.handleReturnClick()}
             />
@@ -218,6 +251,15 @@ export class TestPage extends React.Component {
 
         return (
             <>
+                <Modal
+                    visible={this.state.questionResult}
+                    title={this.state.questionResult?.title}
+                    closable={false}
+                    footer={null}
+                    width={300}
+                >
+                    <Image src={this.state.questionResult?.src} preview={false}/>
+                </Modal>
                 <Row>
                     <Col span={1}/>
                     <Col span={4} align='left'>
