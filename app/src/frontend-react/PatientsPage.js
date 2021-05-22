@@ -128,9 +128,6 @@ export default class PatientsPage extends React.Component {
                     visible={this.state.showUser}
                     onCancel={() => this.setState({showUser: undefined})}
                     footer={[
-                        <Button disabled>
-                            Редактировать
-                        </Button>,
                         <Button onClick={async () => await this.handleDeleteUserClick(this.state.showUser?.id)}>
                             Удалить
                         </Button>,
