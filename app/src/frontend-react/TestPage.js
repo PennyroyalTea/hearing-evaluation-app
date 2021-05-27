@@ -1,11 +1,12 @@
 import React from "react";
-import {Image,
+import {
+    Image,
     Typography,
     List,
     Button,
     Col,
     Row,
-    Modal
+    Modal, Space
 } from "antd";
 
 import {List as ImmutableList} from 'immutable';
@@ -19,6 +20,28 @@ const path = require('path');
 
 
 const {Title} = Typography;
+
+const getColumnsSize = (x) => {
+    if (x < 7) {
+        return x;
+    }
+    if (x < 19 && x % 3 === 0) {
+        return Math.floor(x / 3);
+    }
+    if (x < 13) {
+        if (x % 2 === 0) {
+            return Math.floor(x / 2);
+        } else {
+            return Math.floor((x + 1) / 2);
+        }
+    }
+    for (let d of [6, 5, 4, 3]) {
+        if (x % d === 0) return d;
+        if ((x + 1) % d === 0) return d;
+    }
+
+    return 6;
+};
 
 export class TestPage extends React.Component {
     constructor(props) {
@@ -138,6 +161,7 @@ export class TestPage extends React.Component {
             if (correct) {
                 result = {
                     type: '+',
+                    color: 'green',
                     title: 'Правильный ответ',
                     description: 'правильно!',
                     src: 'succFace.jpeg'
@@ -145,6 +169,7 @@ export class TestPage extends React.Component {
             } else {
                 result = {
                     type: '-',
+                    color: 'red',
                     title: 'Неправильный ответ',
                     description: 'неверно :(',
                     src: 'failFace.jpeg'
@@ -153,8 +178,9 @@ export class TestPage extends React.Component {
         } else {
             result = {
                 type: '?',
+                color: 'black',
                 title: 'Ответ принят',
-                description: '',
+                description: 'Ответ принят.',
                 src: 'confFace.jpeg'
             }
         }
@@ -251,15 +277,19 @@ export class TestPage extends React.Component {
         }
 
         return (
-            <>
+            <Space direction='vertical' style={{width: '100%'}}>
                 <Modal
                     visible={this.state.questionResult}
-                    title={this.state.questionResult?.title}
+                    // title={this.state.questionResult?.title}
                     closable={false}
                     footer={null}
                     width={300}
                 >
-                    <Image src={this.state.questionResult?.src} preview={false}/>
+                    <Space direction='vertical'>
+                        <Title level={2} style={{color: this.state.questionResult?.color}}>{this.state.questionResult?.description}</Title>
+                        <Image src={this.state.questionResult?.src} preview={false}/>
+                    </Space>
+
                 </Modal>
                 <Row>
                     <Col span={1}/>
@@ -313,12 +343,12 @@ export class TestPage extends React.Component {
                         align='center'
                         grid={{
                             gutter: 16,
-                            column: Math.min(this.state.config.questions[qId].answers.size, 5)}}
+                            column: getColumnsSize(this.state.config.questions[qId].answers.length)}}
                         dataSource={this.state.config.questions[qId].answers}
                         renderItem={(answer)=>this.renderAnswer(answer)}
                     />
                 </Row>
-            </>
+            </Space>
         )
     }
 }
