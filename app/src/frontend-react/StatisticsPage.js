@@ -57,15 +57,15 @@ export default class StatisticsPage extends React.Component {
         }
 
         return (
-            <Space direction='vertical'>
+            <Space direction='vertical' style={{width: '100%'}}>
                 <Row justify='center' gutter={16}>
                     <Col>
-                        <Button onClick={async ()=> await window.backend.saveAttemptsAsCSV('main')}>
+                        <Button size='large' onClick={async ()=> await window.backend.saveAttemptsAsCSV('main')}>
                             Скачать основной отчет
                         </Button>
                     </Col>
                     <Col>
-                        <Button onClick={async ()=> await window.backend.saveAttemptsAsCSV('full')}>
+                        <Button size='large' onClick={async ()=> await window.backend.saveAttemptsAsCSV('full')}>
                             Скачать полный отчет
                         </Button>
                     </Col>
