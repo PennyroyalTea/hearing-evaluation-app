@@ -12,7 +12,7 @@ import {
 
 const { Column, ColumnGroup } = Table
 
-const ATTEMPTS_SHOW_LIMIT = 100;
+const ATTEMPTS_SHOW_LIMIT = 1000;
 
 export default class StatisticsPage extends React.Component {
     constructor(props) {
@@ -41,6 +41,7 @@ export default class StatisticsPage extends React.Component {
             attempt['patronal'] = user.patronal;
             attempt['time'] = this._formatDate(new Date(attempt.ts));
             attempt['result'] = `${attempt['succ']} / ${attempt['all']} (${(100 * attempt['succ'] / attempt['all']).toFixed(1)} %)`;
+            attempt['thresholdPass'] = (attempt['threshold'] ? (attempt['succ'] >= attempt['threshold'] ? '+' : '-') : '?');
             attempt['avgSpeed'] = `${(attempt['averageSpeed'] / 1000)?.toFixed(2)} сек.`;
             return attempt;
         });
@@ -80,6 +81,7 @@ export default class StatisticsPage extends React.Component {
                     <ColumnGroup title='Тест'>
                         <Column title='название' dataIndex='testId' key='tid' />
                         <Column title='результат' dataIndex='result' key='result' />
+                        <Column title='порог пройден' dataIndex='thresholdPass' key='thresholdPass' />
                         <Column title='среднее время' dataIndex='avgSpeed' key='avgSpeed' />
                     </ColumnGroup>
                     <Column title='дата' dataIndex='time' key='time' />

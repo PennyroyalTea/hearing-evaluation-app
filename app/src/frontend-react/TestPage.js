@@ -216,6 +216,7 @@ export class TestPage extends React.Component {
             testId: this.state.config.name,
             succ: this.state.correctAnswers,
             all: this.state.config.questions.length,
+            threshold: this.state.config.settings.threshold,
             averageSpeed: this.state.answerSpeeds.reduce((sum, cur)=>sum+cur) / this.state.answerSpeeds.size,
             ts: Date.now()
         } : {})

@@ -7,10 +7,10 @@ import {Button,
 const {Title} = Typography;
 
 function TestResult(props) {
-    let treshold;
+    let threshold;
 
     if (props.testMode === 'exam') {
-        treshold = <Tresholdfeedback th={props.config.settings.treshold} ca={props.correctAnswers}/>;
+        threshold = <Thresholdfeedback th={props.config.settings.threshold} ca={props.correctAnswers}/>;
     }
 
     return (
@@ -21,7 +21,7 @@ function TestResult(props) {
             <Title>Правильных ответов: {props.correctAnswers} из {props.config.questions.length} ({(100 * props.correctAnswers / props.config.questions.length).toFixed(1)} %)
             </Title>
             <Title>Среднее время ответа: {(props.answerSpeeds.reduce((sum, cur)=>sum+cur) / props.answerSpeeds.size / 1000).toFixed(1)} с.</Title>
-            {treshold}
+            {threshold}
             <Button
                 onClick={()=>props.handleReturnClick()}
             >
@@ -31,7 +31,7 @@ function TestResult(props) {
     )
 }
 
-function Tresholdfeedback(props) {
+function Thresholdfeedback(props) {
     if (!props.th) {
         return (<Result
             status='info'

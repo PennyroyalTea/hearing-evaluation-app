@@ -31,6 +31,7 @@ class CSVHelper {
             row['Тест'] = attempt.testId;
             row['Правильных'] = attempt.succ;
             row['Всего'] = attempt.all;
+            row['Порог'] = attempt.threshold;
             row['Среднее время ответа'] = attempt.averageSpeed;
             return row;
         })
@@ -53,6 +54,7 @@ class CSVHelper {
             row['Тест'] = attempt.testId;
             row['Правильных'] = attempt.succ;
             row['Всего'] = attempt.all;
+            row['Порог'] = attempt.threshold;
             row['Среднее время ответа'] = attempt.averageSpeed;
             return row;
         })
