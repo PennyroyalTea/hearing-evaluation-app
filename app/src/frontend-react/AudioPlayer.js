@@ -25,6 +25,10 @@ class AudioPlayer extends React.Component {
         }
     }
 
+    componentWillUnmount() {
+        this.state.audio.pause();
+    }
+
     handleClick() {
         this.setState({
             clicked: true
