@@ -55,7 +55,7 @@ class CSVHelper {
             row['Правильных'] = attempt.succ;
             row['Всего'] = attempt.all;
             row['Порог'] = attempt.threshold;
-            row['Среднее время ответа'] = attempt.averageSpeed;
+            row['Среднее время ответа'] = (attempt.averageSpeed / 1000).toFixed(2);
             return row;
         })
 
