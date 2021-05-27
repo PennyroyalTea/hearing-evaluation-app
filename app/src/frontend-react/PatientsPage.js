@@ -4,14 +4,12 @@ import {List,
     Card,
     Button,
     Space,
-    Divider,
     Typography,
     Modal,
     Form,
-    Input,
-    DatePicker} from 'antd'
+    Input} from 'antd'
 
-const {Text} = Typography
+const {Text, Title} = Typography
 
 export default class PatientsPage extends React.Component {
     constructor(props) {
@@ -105,19 +103,16 @@ export default class PatientsPage extends React.Component {
 
         return (
 
-            <Space direction='vertical'>
-                <div align='center'>
-                    {this.props.currentUser ?
-                        (<Text type={'success'}>
-                            Текущий пациент: {this.props.currentUser.surname} {this.props.currentUser.name}
-                        </Text>) :
-                        (<Text type={'danger'}>Текущий пациент не выбран</Text>)
-                    }
-                    <Button size='large' onClick={() => this.handleNewPatientClick()}>
-                        Добавить нового пациента
-                    </Button>
-                </div>
-                <Divider />
+            <Space direction='vertical' style={{width: '100%'}} align='center' size='large'>
+                {this.props.currentUser ?
+                    (<Title level={3} type={'success'}>
+                        Текущий пациент: {this.props.currentUser.surname} {this.props.currentUser.name}
+                    </Title>) :
+                    (<Title level={3} type={'danger'}>Текущий пациент не выбран</Title>)
+                }
+                <Button size='large' onClick={() => this.handleNewPatientClick()}>
+                    Добавить нового пациента
+                </Button>
                 <List
                     grid={{gutter: 16}}
                     dataSource={this.state.users}
@@ -151,7 +146,7 @@ export default class PatientsPage extends React.Component {
                     title='Добавить нового пациента'
                     visible={this.state.showUserCreateModal}
                     onCancel={() => this.setState({showUserCreateModal: false})}
-                    footer={[]}
+                    footer={null}
                 >
                     <Form
                         {...layout}
@@ -179,7 +174,7 @@ export default class PatientsPage extends React.Component {
                                     message: 'Пожалуйста, введите имя!',
                                 },
                             ]}>
-                            <Input />
+                            <Input/>
                         </Form.Item>
                         <Form.Item
                             {...tailLayout}
@@ -199,7 +194,7 @@ export default class PatientsPage extends React.Component {
                                 },
                             ]}
                         >
-                            <DatePicker placeholder=''/>
+                            <Input type='date'/>
                         </Form.Item>
                         <Form.Item
                             {...tailLayout}
