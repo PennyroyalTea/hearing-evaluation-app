@@ -6,7 +6,9 @@ import {
     Button,
     Col,
     Row,
-    Modal, Space
+    Modal,
+    Space,
+    Result
 } from "antd";
 
 import {List as ImmutableList} from 'immutable';
@@ -235,13 +237,6 @@ export class TestPage extends React.Component {
 
     renderAnswer(answer) {
         const isSelected = this.state[`img_${answer.image}`];
-        const isVisible = this.state.showImages;
-
-        if (!isVisible) {
-            return (<List.Item>
-                <div style={{backgroundColor: "black", width: "150px", height: "150px"}}/>
-            </List.Item>);
-        }
 
         return (<List.Item>
             <Image
@@ -277,11 +272,23 @@ export class TestPage extends React.Component {
             />
         }
 
+        let imageList = (<List
+            align='center'
+            grid={{
+                gutter: 16,
+                column: getColumnsSize(this.state.config.questions[qId].answers.length)}}
+            dataSource={this.state.config.questions[qId].answers}
+            renderItem={(answer)=>this.renderAnswer(answer)}
+        />);
+
+        if (!this.state.showImages) {
+            imageList = (<Result title={'Ответы будут показаны после воспроизведения'}/>);
+        }
+
         return (
             <Space direction='vertical' style={{width: '100%'}}>
                 <Modal
                     visible={this.state.questionResult}
-                    // title={this.state.questionResult?.title}
                     closable={false}
                     footer={null}
                     width={300}
@@ -340,14 +347,7 @@ export class TestPage extends React.Component {
                     <Col span={9}/>
                 </Row>
                 <Row justify='center'>
-                    <List
-                        align='center'
-                        grid={{
-                            gutter: 16,
-                            column: getColumnsSize(this.state.config.questions[qId].answers.length)}}
-                        dataSource={this.state.config.questions[qId].answers}
-                        renderItem={(answer)=>this.renderAnswer(answer)}
-                    />
+                    {imageList}
                 </Row>
             </Space>
         )
