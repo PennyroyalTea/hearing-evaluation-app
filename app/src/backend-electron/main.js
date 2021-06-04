@@ -43,7 +43,6 @@ async function createWindow() {
         }
     })
 
-    mainWindow.webContents.openDevTools()
     if (isDev) {
         await mainWindow.loadURL('http://localhost:3000')
     } else {
