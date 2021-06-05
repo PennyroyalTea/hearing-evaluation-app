@@ -131,15 +131,15 @@ export default class PatientsPage extends React.Component {
                         </Button>
                     ]}
                 >
-                    {this.state.showUser?.id || ''}
+                    <Text>{this.state.showUser?.surname || ''}</Text>
                     <br />
-                    {this.state.showUser?.surname || ''}
+                    <Text>{this.state.showUser?.name || ''}</Text>
                     <br />
-                    {this.state.showUser?.name || ''}
+                    <Text>{this.state.showUser?.patronal || ''}</Text>
                     <br />
-                    {this.state.showUser?.patronal || ''}
+                    <Text>{this.state.showUser?.birthday || ''}</Text>
                     <br />
-                    {this.state.showUser?.birthday || ''}
+                    <Text type='secondary'>id: {this.state.showUser?.id || ''}</Text>
                 </Modal>
                 {/* create new user modal */}
                 <Modal
