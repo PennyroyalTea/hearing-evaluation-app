@@ -97,7 +97,7 @@ class App extends React.Component {
                         />)
                 break;
             case 'stats':
-                content = <StatisticsPage/>
+                content = <StatisticsPage currentUserId={this.state.currentUser?.id}/>
                 break;
             case 'settings':
                 content = (<SettingsPage

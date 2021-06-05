@@ -33,7 +33,7 @@ export default class StatisticsPage extends React.Component {
     }
 
     async componentDidMount() {
-        let attempts = await window.backend.getNAttempts(ATTEMPTS_SHOW_LIMIT);
+        let attempts = await window.backend.getNAttempts(ATTEMPTS_SHOW_LIMIT, this.props.currentUserId);
         attempts = attempts.map(async (attempt) => {
             const user = await window.backend.getUserById(attempt.userId);
             attempt['name'] = user.name;
@@ -61,13 +61,15 @@ export default class StatisticsPage extends React.Component {
             <Space direction='vertical' style={{width: '100%'}}>
                 <Row justify='center' gutter={16}>
                     <Col>
-                        <Button size='large' onClick={async ()=> await window.backend.saveAttemptsAsCSV('main')}>
-                            Скачать основной отчет
+                        <Button size='large'
+                                disabled={!this.props.currentUserId}
+                                onClick={async ()=> await window.backend.saveAttemptsAsCSV(this.props.currentUserId)}>
+                            Отчет по текущему
                         </Button>
                     </Col>
                     <Col>
-                        <Button size='large' onClick={async ()=> await window.backend.saveAttemptsAsCSV('full')}>
-                            Скачать полный отчет
+                        <Button size='large' onClick={async ()=> await window.backend.saveAttemptsAsCSV()}>
+                            Отчет по всем
                         </Button>
                     </Col>
                 </Row>

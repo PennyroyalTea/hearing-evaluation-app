@@ -31,10 +31,10 @@ contextBridge.exposeInMainWorld('backend', {
     saveTestResult: (result) => {
         return ipcRenderer.invoke('db/save-test-result', result)
     },
-    getNAttempts: (n) => {
-        return ipcRenderer.invoke('db/get-n-attempts', n)
+    getNAttempts: (n, user) => {
+        return ipcRenderer.invoke('db/get-n-attempts', n, user)
     },
-    saveAttemptsAsCSV: (level) => {
-        return ipcRenderer.invoke('db/save-attempts-csv', level)
+    saveAttemptsAsCSV: (userId) => {
+        return ipcRenderer.invoke('db/save-attempts-csv', userId)
     }
 })

@@ -147,12 +147,13 @@ function addDBHandlers() {
             .insert(result)
             .write()
     })
-    ipcMain.handle('db/get-n-attempts', (event, n) => {
-        return db.get('attempts')
+    ipcMain.handle('db/get-n-attempts', (event, n, userId) => {
+        let src = userId ? db.get('attempts').filter(attempt => attempt.userId === userId) : db.get('attempts');
+        return src
             .take(n)
             .value()
     })
-    ipcMain.handle('db/save-attempts-csv', async (event, level) => {
+    ipcMain.handle('db/save-attempts-csv', async (event, userId) => {
         const attempts = db.get('attempts').value();
         const users = db.get('users').value();
 
@@ -164,7 +165,7 @@ function addDBHandlers() {
         const {filePath} = dialogRes;
 
         const helper = new CSVHelper()
-        await helper.commit(attempts, users, filePath, level);
+        await helper.commit(attempts, users, filePath, userId);
     })
 }
 
