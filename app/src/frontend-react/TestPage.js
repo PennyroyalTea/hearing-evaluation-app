@@ -240,7 +240,7 @@ export class TestPage extends React.Component {
 
         return (<List.Item>
             <Image
-                width={'150px'}
+                width='100%'
                 preview={false}
                 src={path.join(
                     'file://',
@@ -272,11 +272,14 @@ export class TestPage extends React.Component {
             />
         }
 
+        let columns = this.state.config.settings.columns || getColumnsSize(this.state.config.questions[qId].answers.length);
+
         let imageList = (<List
+            style={{width: '95%'}}
             align='center'
             grid={{
                 gutter: 16,
-                column: getColumnsSize(this.state.config.questions[qId].answers.length)}}
+                column: columns}}
             dataSource={this.state.config.questions[qId].answers}
             renderItem={(answer)=>this.renderAnswer(answer)}
         />);
