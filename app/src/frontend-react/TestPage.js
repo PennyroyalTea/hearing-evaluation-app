@@ -174,7 +174,7 @@ export class TestPage extends React.Component {
                     color: 'red',
                     title: 'Неправильный ответ',
                     description: 'неверно :(',
-                    src: 'failFace.jpeg'
+                    src: 'failFace.png'
                 }
             }
         } else {
