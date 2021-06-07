@@ -240,7 +240,7 @@ export class TestPage extends React.Component {
 
         return (<List.Item>
             <Image
-                width='100%'
+                width={this.state.config.settings.scale ? '100%' : '170px'}
                 preview={false}
                 src={path.join(
                     'file://',
